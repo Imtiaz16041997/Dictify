@@ -122,7 +122,6 @@ fun MainScreen(){
                         text = searchText,
                         onTextChange = { newValue ->
                             searchText = newValue
-                            // You might want to trigger search/filter here or in HomeScreen
                         },
                         placeholder = "Search word...",
                         onCloseClicked = {
@@ -130,6 +129,10 @@ fun MainScreen(){
                         },
                         onMicClicked = {
                             // Handle mic click
+                        },
+                        onLanguageClicked = { // <--- Provide implementation for the new callback
+                            // This is where you would open a language selection dialog, navigate to a language screen, etc.
+                            println("Language icon clicked!")
                         }
                     )
 
