@@ -23,58 +23,51 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// --- MainUiState ---
-// This class should be in its own file (e.g., MainUiState.kt) or defined directly in ViewModel
 data class MainUiState(
     val isLoading: Boolean = false,
     val error: Throwable? = null,
-    val wordDefinition: WordsInformation? = null // New field for dictionary result
+    val movieSearchResults: List<Any> = emptyList(),
+    val tvSeriesSearchResults: List<Any> = emptyList(),
+    val wordDefinition: WordsInformation? = null
 )
-// --- End MainUiState ---
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-
-
-    private val dictionaryRepo: DictionaryRepository // Inject the new dictionary repository
+    private val dictionaryRepo: DictionaryRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> get() = _uiState.asStateFlow()
 
-
-
-    // You likely have a searchTvSeries function too, similar to searchMovies
-
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     fun lookupWordDefinition(word: String) {
         viewModelScope.launch {
             flowOf(word)
-                .debounce(300) // Debounce user typing to avoid excessive API calls
-                .filter { it.trim().isNotEmpty() } // Only search for non-empty words
-                .distinctUntilChanged() // Only search if the word itself changed
-                .flatMapLatest { query -> // Cancel previous requests if a new query arrives
-                    // Call the dictionary repository
+                // Debounce/distinct can be kept but are less critical for explicit triggers.
+                // They might still prevent rapid multiple taps of the search button.
+                .debounce(100) // Small debounce to handle very rapid double-taps
+                .distinctUntilChanged() // Ensures API isn't called for the same word repeatedly
+
+                .filter { it.trim().isNotEmpty() } // <--- Only proceed if the word is not empty
+                .flatMapLatest { query ->
                     dictionaryRepo.getWordDefinition(
                         word = query,
-                        targetLang = "en", // You might make these configurable in the future
+                        targetLang = "en",
                         sourceLang = "en"
                     )
                 }
                 .onStart {
-                    // Emit loading state and clear previous definition when search starts
+                    // Emit loading state and clear previous definition
                     _uiState.value = _uiState.value.copy(isLoading = true, error = null, wordDefinition = null)
                 }
                 .catch { exception ->
-                    // Catch any errors from the upstream flow (network, parsing)
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         error = exception,
-                        wordDefinition = null // Clear definition on error
+                        wordDefinition = null
                     )
                 }
                 .collect { result ->
-                    // Collect the DataState from the repository
                     when (result) {
                         is DataState.Loading -> { /* Handled by onStart */ }
                         is DataState.Success -> {
@@ -88,12 +81,21 @@ class MainViewModel @Inject constructor(
                             _uiState.value = _uiState.value.copy(
                                 isLoading = false,
                                 error = result.exception,
-                                wordDefinition = null // Clear previous definition on error
+                                wordDefinition = null
                             )
                         }
                     }
                 }
         }
+
+        // Handle the case where the input word is empty.
+        // This is important for the `onCloseClicked` from MySearchBar
+        if (word.isBlank()) {
+            _uiState.value = _uiState.value.copy(
+                wordDefinition = null, // Clear the definition
+                isLoading = false,
+                error = null
+            )
+        }
     }
 }
-

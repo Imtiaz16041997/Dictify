@@ -42,10 +42,8 @@ import com.imtiaz.dictify.presentation.component.MySearchBar
 
 
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+
 
 
 
@@ -55,10 +53,9 @@ import androidx.navigation.compose.rememberNavController
 @Composable
 fun MainScreen(){
     val navController = rememberNavController()
-    // val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState()) // Not used directly on Scaffold, but kept if you integrate it
     val currentRoute = currentRoute(navController)
 
-    val hideTopBarRoutes = listOf(Screen.WordDetail.route) // Add other routes where top bar should be hidden
+    val hideTopBarRoutes = listOf(Screen.WordDetail.route)
     val bottomNavRoutes = listOf(
         Screen.Home.route,
         Screen.Bookmarks.route,
@@ -67,17 +64,11 @@ fun MainScreen(){
     )
     val showTopAppBarActions = currentRoute !in hideTopBarRoutes
 
-    // For rememberPagerState: Ensure you have the necessary dependency.
-    // If you're on Compose Foundation 1.6.0+ it's built-in.
-    // Otherwise, you might need accompanist-pager.
     val pagerState = rememberPagerState(initialPage = 0) {
         bottomNavRoutes.size
     }
 
-    // Get the ViewModel here as it's the bridge to the data
     val mainViewModel: MainViewModel = hiltViewModel()
-
-    // State for the search bar, lifted to MainScreen to control it globally
     var searchText by remember { mutableStateOf("") }
 
     Scaffold(
@@ -86,10 +77,9 @@ fun MainScreen(){
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.primary) // Your custom TopBar background
-                        .statusBarsPadding() // Handle system status bar insets
+                        .background(MaterialTheme.colorScheme.primary)
+                        .statusBarsPadding()
                 ) {
-                    // Top row for hamburger menu, title, and three dots
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -97,7 +87,6 @@ fun MainScreen(){
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // Hamburger menu icon
                         IconButton(onClick = { /* Handle navigation drawer open */ }) {
                             Icon(
                                 imageVector = Icons.Default.Menu,
@@ -105,8 +94,6 @@ fun MainScreen(){
                                 tint = Color.White
                             )
                         }
-
-                        // Title
                         Text(
                             text = "iDictionary",
                             maxLines = 1,
@@ -115,8 +102,6 @@ fun MainScreen(){
                             fontWeight = FontWeight.Bold,
                             fontSize = MaterialTheme.typography.titleLarge.fontSize
                         )
-
-                        // Three-dot menu icon
                         IconButton(onClick = { /* Handle more options */ }) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
@@ -126,37 +111,40 @@ fun MainScreen(){
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp)) // Spacer below title bar
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                    // MySearchBar
                     MySearchBar(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         text = searchText,
                         onTextChange = { newValue ->
                             searchText = newValue
-                            // Trigger the dictionary lookup from the ViewModel
-                            // This will now exclusively trigger dictionary search.
-                            // If you have multiple search contexts (e.g., movie search on another tab),
-                            // you'd add logic here to check the active tab/context.
-                            mainViewModel.lookupWordDefinition(newValue)
+                            // NO API CALL HERE. Only update the text state.
                         },
                         placeholder = "Search word...",
                         onCloseClicked = {
                             searchText = ""
-                            // Clear the current definition in ViewModel when search is cleared
-                            mainViewModel.lookupWordDefinition("")
+                            // Clear previous search results when text is cleared
+                            mainViewModel.lookupWordDefinition("") // Pass empty to clear results
                         },
                         onMicClicked = {
                             println("Mic icon clicked!")
-                            // Implement voice input
+                            // Handle mic click
                         },
                         onLanguageClicked = {
                             println("Language icon clicked!")
-                            // Implement language selection for translation API
+                            // Handle language click
+                        },
+                        onSearchTriggered = { wordToSearch -> // <--- NEW CALLBACK IMPLEMENTATION
+                            if (wordToSearch.isNotBlank()) {
+                                mainViewModel.lookupWordDefinition(wordToSearch)
+                            } else {
+                                // If search triggered with empty text, clear results
+                                mainViewModel.lookupWordDefinition("")
+                            }
                         }
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp)) // Spacer below search bar
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         },
@@ -165,9 +153,8 @@ fun MainScreen(){
                 BottomNavigationUI(navController, pagerState)
             }
         }
-    ){ paddingValues -> // Use paddingValues provided by Scaffold
+    ){ paddingValues ->
         Box(Modifier.padding(paddingValues)) {
-            // Pass the ViewModel instance to Navigation/HomeScreen
             Navigation(navController = navController, mainViewModel = mainViewModel)
         }
     }

@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Language
@@ -26,8 +28,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.imtiaz.dictify.presentation.theme.Cranberry
 
@@ -40,8 +44,11 @@ fun MySearchBar(
     placeholder: String,
     onCloseClicked: () -> Unit,
     onMicClicked: () -> Unit,
-    onLanguageClicked: () -> Unit
+    onLanguageClicked: () -> Unit,
+    onSearchTriggered: (String) -> Unit // <--- NEW PARAMETER
 ) {
+    val focusManager = LocalFocusManager.current // To clear focus on search
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -59,7 +66,7 @@ fun MySearchBar(
             modifier = Modifier.fillMaxWidth(),
             value = text,
             onValueChange = {
-                onTextChange(it)
+                onTextChange(it) // Only update the text state, don't trigger API here
             },
             placeholder = {
                 Text(
@@ -78,12 +85,24 @@ fun MySearchBar(
                 cursorColor = MaterialTheme.colorScheme.onBackground,
             ),
             singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Search // <--- Show search icon on keyboard
+            ),
+            keyboardActions = KeyboardActions(
+                onSearch = { // <--- Trigger search when keyboard search button is pressed
+                    onSearchTriggered(text)
+                    focusManager.clearFocus() // Hide keyboard
+                }
+            ),
             leadingIcon = {
-
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { /* Handle search icon click if needed */ }) {
+                    // This IconButton will now trigger the search
+                    IconButton(onClick = {
+                        onSearchTriggered(text) // <--- Trigger search when search icon is clicked
+                        focusManager.clearFocus() // Hide keyboard
+                    }) {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = "Search",
@@ -94,21 +113,21 @@ fun MySearchBar(
                 }
             },
             trailingIcon = {
-                // Group mic/clear icon, divider, and new language icon in a Row
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Divider (before mic/clear icon)
                     SearchBarDivider(
                         modifier = Modifier
-                            .height(24.dp) // Match height
-                            .padding(start = 50.dp, end = 2.dp) // Maintain the 50.dp gap
+                            .height(24.dp)
+                            .padding(start = 50.dp, end = 2.dp)
                     )
 
                     // Mic/Clear Icon
                     IconButton(onClick = {
                         if (text.isNotBlank()) {
                             onCloseClicked()
+                            focusManager.clearFocus() // Hide keyboard on clear
                         } else {
                             onMicClicked()
                         }
@@ -133,7 +152,7 @@ fun MySearchBar(
                     // New Language Icon
                     IconButton(onClick = onLanguageClicked) {
                         Icon(
-                            imageVector = Icons.Default.Language, // Or Icons.Default.Translate
+                            imageVector = Icons.Default.Language,
                             contentDescription = "Change Language",
                             tint = Cranberry,
                             modifier = Modifier.size(22.dp)

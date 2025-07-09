@@ -34,6 +34,7 @@ fun Navigation(navController: NavHostController,  mainViewModel: MainViewModel/*
             ProfileScreen(navController)
         }
 
+
 //        composable(Screen.WordDetail.route + "/{word}",
 //            arguments = listOf(navArgument("word") { type = NavType.StringType })) { backStackEntry ->
 //            val word = backStackEntry.arguments?.getString("word")
