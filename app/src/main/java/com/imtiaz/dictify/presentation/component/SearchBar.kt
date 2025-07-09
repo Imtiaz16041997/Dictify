@@ -1,4 +1,4 @@
-package com.imtiaz.dictify.ui.component
+package com.imtiaz.dictify.presentation.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.imtiaz.dictify.ui.theme.Cranberry
+import com.imtiaz.dictify.presentation.theme.Cranberry
 
 
 @Composable
@@ -91,12 +91,6 @@ fun MySearchBar(
                             modifier = Modifier.size(22.dp)
                         )
                     }
-//                    // Divider next to search icon with exact padding
-//                    SearchBarDivider(
-//                        modifier = Modifier
-//                            .height(24.dp)
-//                            .padding(start = 2.dp, end = 50.dp) // Maintain the 50.dp gap
-//                    )
                 }
             },
             trailingIcon = {
@@ -148,13 +142,5 @@ fun MySearchBar(
                 }
             },
         )
-        // Remove the standalone SearchBarDivider here, as it's now inside trailingIcon
-/*
-        SearchBarDivider(
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(horizontal = 50.dp)
-        )
-*/
     }
 }

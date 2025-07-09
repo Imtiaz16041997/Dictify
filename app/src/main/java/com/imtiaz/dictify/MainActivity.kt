@@ -3,17 +3,11 @@ package com.imtiaz.dictify
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.imtiaz.dictify.ui.screen.MainScreen
-import com.imtiaz.dictify.ui.theme.DictifyTheme
+import com.imtiaz.dictify.presentation.screen.mainscreen.MainScreen
+import com.imtiaz.dictify.presentation.theme.DictifyTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -1,4 +1,4 @@
-package com.imtiaz.dictify.ui.screen
+package com.imtiaz.dictify.presentation.screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

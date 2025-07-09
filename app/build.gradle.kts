@@ -19,7 +19,7 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
+        buildConfigField("String", "API_KEY", "\"ebe00b316bmsh8190a541fa1249cp101471jsnfe67187c2328\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -41,6 +41,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -111,4 +112,7 @@ dependencies {
     implementation (libs.maps.compose)
     implementation (libs.play.services.maps)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.multidex)
+    // Logger
+    implementation(libs.timber)
 }

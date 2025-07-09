@@ -1,4 +1,4 @@
-package com.imtiaz.dictify.ui.theme
+package com.imtiaz.dictify.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

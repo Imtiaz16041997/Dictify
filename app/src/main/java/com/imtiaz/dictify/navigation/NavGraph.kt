@@ -1,30 +1,28 @@
 package com.imtiaz.dictify.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
+import android.R.attr.type
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.imtiaz.dictify.R
-import com.imtiaz.dictify.ui.screen.BookmarksScreen
-import com.imtiaz.dictify.ui.screen.HomeScreen
-import com.imtiaz.dictify.ui.screen.ProfileScreen
-import com.imtiaz.dictify.ui.screen.TranslatorScreen
+import com.imtiaz.dictify.presentation.screen.BookmarksScreen
+import com.imtiaz.dictify.presentation.screen.HomeScreen
+import com.imtiaz.dictify.presentation.screen.ProfileScreen
+import com.imtiaz.dictify.presentation.screen.TranslatorScreen
+import com.imtiaz.dictify.presentation.screen.mainscreen.MainViewModel
 
 @Composable
-fun Navigation(navController: NavHostController/*, genres: List<Genre>? = null,*/ ) {
+fun Navigation(navController: NavHostController,  mainViewModel: MainViewModel/*, genres: List<Genre>? = null,*/ ) {
     NavHost(navController, startDestination = Screen.Home.route) {
         composable(Screen.Home.route) {
-            HomeScreen(navController)
+            HomeScreen(navController,mainViewModel)
         }
         composable(Screen.Bookmarks.route) {
             BookmarksScreen(navController)
@@ -35,6 +33,12 @@ fun Navigation(navController: NavHostController/*, genres: List<Genre>? = null,*
         composable(Screen.Profile.route) {
             ProfileScreen(navController)
         }
+
+//        composable(Screen.WordDetail.route + "/{word}",
+//            arguments = listOf(navArgument("word") { type = NavType.StringType })) { backStackEntry ->
+//            val word = backStackEntry.arguments?.getString("word")
+//            // WordDetailScreen(word = word, viewModel = mainViewModel) // Or a dedicated detail ViewModel
+//        }
     }
 }
 
