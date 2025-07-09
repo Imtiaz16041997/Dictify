@@ -1,4 +1,4 @@
-package com.imtiaz.dictify.data.model
+package com.imtiaz.dictify.data.model.dictzilla
 
 import com.google.gson.annotations.SerializedName
 

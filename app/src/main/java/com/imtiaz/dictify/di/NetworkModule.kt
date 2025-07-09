@@ -41,11 +41,11 @@ object NetworkModule {
     /**
      * Provides API Key Interceptor
      */
-    @Singleton
-    @Provides
-    fun provideApiKeyInterceptor(): ApiKeyInterceptor {
-        return ApiKeyInterceptor()
-    }
+//    @Singleton
+//    @Provides
+//    fun provideApiKeyInterceptor(): ApiKeyInterceptor {
+//        return ApiKeyInterceptor()
+//    }
 
     /**
      * Provides custom OkkHttp
@@ -54,7 +54,7 @@ object NetworkModule {
     @Provides
     fun provideOkHttpClient(
         loggingInterceptor: HttpLoggingInterceptor,
-        apiKeyInterceptor: ApiKeyInterceptor,
+//        apiKeyInterceptor: ApiKeyInterceptor,
     ): OkHttpClient {
         val okHttpClient = OkHttpClient().newBuilder()
 
@@ -63,7 +63,7 @@ object NetworkModule {
         okHttpClient.readTimeout(40, TimeUnit.SECONDS)
         okHttpClient.writeTimeout(40, TimeUnit.SECONDS)
         okHttpClient.addInterceptor(loggingInterceptor)
-        okHttpClient.addInterceptor(apiKeyInterceptor)
+        //okHttpClient.addInterceptor(apiKeyInterceptor)
         return okHttpClient.build()
     }
 

@@ -4,7 +4,8 @@ package com.imtiaz.dictify.presentation.screen.mainscreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imtiaz.dictify.data.common.DataState
-import com.imtiaz.dictify.data.model.WordsInformation
+import com.imtiaz.dictify.data.model.dictionary.WordResponse
+import com.imtiaz.dictify.data.model.dictzilla.WordsInformation
 import com.imtiaz.dictify.domain.repository.DictionaryRepository
 
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,9 +27,7 @@ import javax.inject.Inject
 data class MainUiState(
     val isLoading: Boolean = false,
     val error: Throwable? = null,
-    val movieSearchResults: List<Any> = emptyList(),
-    val tvSeriesSearchResults: List<Any> = emptyList(),
-    val wordDefinition: WordsInformation? = null
+    val wordDefinition: List<WordResponse> = emptyList(),
 )
 
 @HiltViewModel
@@ -51,20 +50,18 @@ class MainViewModel @Inject constructor(
                 .filter { it.trim().isNotEmpty() } // <--- Only proceed if the word is not empty
                 .flatMapLatest { query ->
                     dictionaryRepo.getWordDefinition(
-                        word = query,
-                        targetLang = "en",
-                        sourceLang = "en"
+                        word = query
                     )
                 }
                 .onStart {
                     // Emit loading state and clear previous definition
-                    _uiState.value = _uiState.value.copy(isLoading = true, error = null, wordDefinition = null)
+                    _uiState.value = _uiState.value.copy(isLoading = true, error = null, wordDefinition = emptyList())
                 }
                 .catch { exception ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         error = exception,
-                        wordDefinition = null
+                        wordDefinition = emptyList()
                     )
                 }
                 .collect { result ->
@@ -81,7 +78,7 @@ class MainViewModel @Inject constructor(
                             _uiState.value = _uiState.value.copy(
                                 isLoading = false,
                                 error = result.exception,
-                                wordDefinition = null
+                                wordDefinition = emptyList()
                             )
                         }
                     }
@@ -92,7 +89,7 @@ class MainViewModel @Inject constructor(
         // This is important for the `onCloseClicked` from MySearchBar
         if (word.isBlank()) {
             _uiState.value = _uiState.value.copy(
-                wordDefinition = null, // Clear the definition
+                wordDefinition = emptyList(), // Clear the definition
                 isLoading = false,
                 error = null
             )

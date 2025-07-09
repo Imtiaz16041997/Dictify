@@ -15,46 +15,67 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.imtiaz.dictify.presentation.screen.mainscreen.MainViewModel
 import java.util.Locale
 
+
 @Composable
 fun HomeScreen(
     navController: NavController,
-    // ViewModel is provided by Hilt
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    // Initialize TextToSpeech once and remember it
-    val textToSpeech by remember {
-        mutableStateOf(
-            TextToSpeech(context) { status ->
-                if (status == TextToSpeech.SUCCESS) {
-                    //textToSpeech.language = Locale.US // Set default language
-                }
+    // Use a nullable state to hold the TextToSpeech instance
+    val textToSpeechState = remember { mutableStateOf<TextToSpeech?>(null) }
+
+    // Use DisposableEffect to initialize and clean up TextToSpeech
+    DisposableEffect(context) {
+        // Declare a variable to hold the TextToSpeech instance
+        // This will be assigned after construction
+        lateinit var ttsInstance: TextToSpeech
+
+        val listener = TextToSpeech.OnInitListener { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                // Now that `ttsInstance` has been assigned, we can set its language.
+                // This callback is executed *after* TextToSpeech constructor finishes.
+                ttsInstance.language = Locale.US
+            } else {
+                Log.e("HomeScreen", "TextToSpeech initialization failed: $status")
             }
-        )
+        }
+
+        // Create the TextToSpeech instance, passing the listener
+        ttsInstance = TextToSpeech(context, listener)
+
+        // Assign the newly created and initializing TTS instance to our state
+        textToSpeechState.value = ttsInstance
+
+        // Clean up TextToSpeech when the composable leaves the composition
+        onDispose {
+            ttsInstance.stop()
+            ttsInstance.shutdown()
+            Log.d("HomeScreen", "TextToSpeech shutdown.")
+        }
     }
+
+    // Get the actual TextToSpeech instance from the state.
+    // It can be null if initialization hasn't completed or failed.
+    val textToSpeech = textToSpeechState.value
 
     LazyColumn(
         modifier = Modifier
@@ -62,24 +83,24 @@ fun HomeScreen(
             .background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
-        // Adjust for spacing above the first item, potentially from TopBar
         item {
-            // This spacer might need to be removed or adjusted depending on your Scaffold padding
-            // It was previously used to move content up, but Scaffold content padding handles this.
-            // If you still have visual issues, adjust this.
             Spacer(modifier = Modifier.height(16.dp))
         }
 
+        // Get the first word definition if available
+        // The API returns a list, so we'll display the first one in the card
+        val firstWordDefinition = uiState.wordDefinition.firstOrNull()
+
         // --- Dictionary Search Result Display ---
-        if (uiState.isLoading && uiState.wordDefinition == null && uiState.error == null) {
-            // Show a loading indicator specifically for the dictionary card area
+        // Condition for loading: isLoading is true AND there are no current results AND no error
+        if (uiState.isLoading && uiState.wordDefinition.isEmpty() && uiState.error == null) {
             item {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(150.dp) // Give it a fixed height for loading placeholder
+                        .height(150.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)), // Lighter background for loading
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
@@ -87,37 +108,45 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
         } else if (uiState.error != null) {
-            // Show error message
             item {
                 Text(
-                    text = "Error: ${uiState.error?.localizedMessage ?: "Unknown error"}",
+                    text = "Error: ${uiState.error?.localizedMessage ?: "No definition found. Try another word."}",
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(top = 8.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
-        } else if (uiState.wordDefinition != null) {
-            // Display WordDefinitionCard if a definition is available and not loading
+        } else if (firstWordDefinition != null) { // Display if at least one definition is found
             item {
                 WordDefinitionCard(
-                    word = uiState.wordDefinition!!.word,
-                    definition = uiState.wordDefinition!!.definition,
-                    // You might add pronunciation field to WordsInformation model if available
+                    word = firstWordDefinition.word.toString(),
+                    // Access the definition from the first meaning, first definition, or provide a default
+                    definition = firstWordDefinition.meanings?.firstOrNull()?.definitions?.firstOrNull()?.definition
+                        ?: "Definition not available.",
                     onRefreshClicked = {
                         // Re-lookup the current word (e.g., if user clicked refresh)
-                        uiState.wordDefinition?.word?.let { word ->
-                            viewModel.lookupWordDefinition(word)
+                        firstWordDefinition.word.let { word ->
+                            viewModel.lookupWordDefinition(word.toString())
                         }
                     },
                     onCopyClicked = { textToCopy ->
-                        val clipboardManager =
-                            context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                         val clipData = ClipData.newPlainText("Dictionary Definition", textToCopy)
                         clipboardManager.setPrimaryClip(clipData)
                         Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
                     },
                     onPronounceClicked = { wordToPronounce ->
-                        textToSpeech.speak(wordToPronounce, TextToSpeech.QUEUE_FLUSH, null, "")
+                        // Attempt to use audio URL first if available
+                        val audioUrl = firstWordDefinition.phonetics?.firstOrNull { it.audio?.isNotBlank() == true }?.audio
+                        if (audioUrl != null) {
+                            // TODO: Implement audio playback from URL (e.g., using Android MediaPlayer)
+                            // For now, fall back to TextToSpeech
+                            textToSpeech?.speak(wordToPronounce, TextToSpeech.QUEUE_FLUSH, null, "")
+
+                        } else {
+                            textToSpeech?.speak(wordToPronounce, TextToSpeech.QUEUE_FLUSH, null, "")
+
+                        }
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))

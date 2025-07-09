@@ -27,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,7 +46,7 @@ fun WordDefinitionCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surface) // Use surface color for the card background
+            .background(Cranberry)
             .padding(16.dp)
     ) {
         // Word and Pronunciation (if available)
@@ -64,7 +65,7 @@ fun WordDefinitionCard(
                 Icon(
                     imageVector = Icons.Default.VolumeUp,
                     contentDescription = "Pronounce",
-                    tint = Cranberry, // Or MaterialTheme.colorScheme.primary
+                    tint = Color.Black, // Or MaterialTheme.colorScheme.primary
                     modifier = Modifier.size(24.dp)
                 )
             }
