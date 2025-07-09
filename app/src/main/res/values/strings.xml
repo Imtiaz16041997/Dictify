@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Dictify</string>
+    <string name="app_name">iDictionary</string>
     <string name="home">Home</string>
     <string name="book_mark">Bookmarks</string>
     <string name="translator">Translator</string>
