@@ -5,9 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imtiaz.dictify.data.common.DataState
 import com.imtiaz.dictify.data.model.dictionary.WordResponse
-import com.imtiaz.dictify.data.model.dictzilla.WordsInformation
 import com.imtiaz.dictify.domain.repository.DictionaryRepository
-
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -15,15 +13,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.merge
+
+
+
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -33,77 +33,48 @@ class MainViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> get() = _uiState.asStateFlow()
 
-    // Centralized search query state (text in the search bar)
+    // Centralized search query state (text in the search bar), purely for UI display
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> get() = _searchQuery.asStateFlow()
 
+    // NEW: A SharedFlow specifically for API calls triggered by typing (debounced)
+    private val _typingSearchApiTrigger = MutableSharedFlow<String>(extraBufferCapacity = 1)
+
+    // A SharedFlow for explicit search triggers (button click, voice input, refresh)
+    private val _explicitSearchApiTrigger = MutableSharedFlow<String>(extraBufferCapacity = 1)
+
     init {
-        // This block listens to changes in the _searchQuery (user typing, voice input)
-        // and automatically triggers the word lookup with debounce and distinct checks.
         @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
         viewModelScope.launch {
-            _searchQuery
-                .debounce(300L) // Wait for 300ms of no new input before triggering a search
-                .distinctUntilChanged() // Only trigger if the query is actually different
-                // Removed .filter { it.trim().isNotEmpty() } here, as performWordLookup handles blank
-                .collectLatest { query ->
-                    // This will call the actual lookup logic whenever _searchQuery changes
-                    // after debouncing and distinct filtering.
-                    performWordLookup(query)
-                }
-        }
-    }
+            // Merge the two distinct API trigger flows (typing and explicit)
+            merge(
+                // 1. "Search-as-you-type" API trigger flow:
+                _typingSearchApiTrigger // NEW: Now observing this SharedFlow for typing API calls
+                    .debounce(300L) // Debounce typing input
+                    .distinctUntilChanged() // Ensure distinct words from typing
+                    .filter { it.trim().isNotEmpty() }, // Only search non-empty words
 
-    /**
-     * Updates the text in the search bar. This should be called by the UI's
-     * onTextChange callback for the search TextField.
-     */
-    fun updateSearchQuery(query: String) {
-        _searchQuery.value = query
-    }
-
-    /**
-     * This function contains the core logic for looking up a word definition.
-     * It's called internally by the `_searchQuery` flow (for search-as-you-type)
-     * and externally by `triggerWordLookup` (for explicit searches).
-     */
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    private fun performWordLookup(word: String) {
-        // Handle the case where the input word is empty.
-        // This is crucial for the `onCloseClicked` from MySearchBar
-        if (word.isBlank()) {
-            _uiState.value = _uiState.value.copy(
-                wordDefinition = emptyList(), // Clear the definition
-                isLoading = false,
-                error = null
+                // 2. Explicit API trigger flow:
+                _explicitSearchApiTrigger // Observing this SharedFlow for explicit API calls
+                    .filter { it.trim().isNotEmpty() } // Still filter empty strings for API call
             )
-            return // Exit early if word is blank, no API call needed
-        }
-
-        viewModelScope.launch {
-            dictionaryRepo.getWordDefinition(word)
-                .onStart {
-                    // Emit loading state and clear previous definition when a new search starts
+                .flatMapLatest { query -> // flatMapLatest ensures only the latest request is active
+                    // Emit loading state before the actual API call starts
                     _uiState.value = _uiState.value.copy(
                         isLoading = true,
                         error = null,
                         wordDefinition = emptyList()
                     )
-                }
-                .catch { exception ->
-                    // Handle any exceptions during the API call
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        error = exception,
-                        wordDefinition = emptyList()
-                    )
+                    // Call the repository to get the definition
+                    dictionaryRepo.getWordDefinition(word = query)
+                        .catch { exception ->
+                            emit(DataState.Error(exception as Exception)) // Emit error into the stream
+                        }
                 }
                 .collect { result ->
-                    // Collect the final result (Success or Error from DataState)
+                    // Collect the final result (Success or Error)
                     when (result) {
-                        is DataState.Loading -> { /* Handled by onStart or by the initial _uiState update */
-                        }
-
+                        is DataState.Loading -> { /* Handled by initial _uiState update in flatMapLatest */ }
                         is DataState.Success -> {
                             _uiState.value = _uiState.value.copy(
                                 wordDefinition = result.data,
@@ -111,7 +82,6 @@ class MainViewModel @Inject constructor(
                                 error = null
                             )
                         }
-
                         is DataState.Error -> {
                             _uiState.value = _uiState.value.copy(
                                 isLoading = false,
@@ -122,6 +92,33 @@ class MainViewModel @Inject constructor(
                     }
                 }
         }
+
+        // Separate collector for UI clearing logic when the search bar becomes blank.
+        // This is still linked to _searchQuery for consistency and immediate UI updates.
+        viewModelScope.launch {
+            _searchQuery
+                // No distinctUntilChanged needed as StateFlow is inherently distinct
+                .collect { query ->
+                    if (query.isBlank()) {
+                        _uiState.value = _uiState.value.copy(
+                            wordDefinition = emptyList(),
+                            isLoading = false,
+                            error = null
+                        )
+                    }
+                }
+        }
+    }
+
+    /**
+     * Updates the text in the search bar (UI) and triggers a debounced search API call.
+     * This should be called by the UI's onTextChange callback for the search TextField.
+     */
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query // Update UI state
+        viewModelScope.launch {
+            _typingSearchApiTrigger.emit(query) // Trigger debounced API call
+        }
     }
 
     /**
@@ -129,25 +126,18 @@ class MainViewModel @Inject constructor(
      * - When the user presses the search icon in the keyboard.
      * - When the user presses the leading search icon in the search bar.
      * - When voice input provides a result.
-     * It updates the `_searchQuery`, which then automatically triggers the `performWordLookup`
-     * via the `init` block's flow collection, ensuring all debouncing/distinct logic is applied.
+     * It updates the `_searchQuery` for UI display and triggers an immediate search API call
+     * via the _explicitSearchApiTrigger SharedFlow.
      */
     fun triggerWordLookup(word: String) {
-        // Update the search bar text first
+        // Update the search bar text for UI consistency
         _searchQuery.value = word
-        // Immediately show loading state for explicit triggers to provide instant feedback,
-        // even if the debounce causes a slight delay before the API call starts.
-        if (word.isNotBlank()) {
-            _uiState.value =
-                _uiState.value.copy(isLoading = true, error = null, wordDefinition = emptyList())
-        } else {
-            // If triggered with a blank word (e.g., search on empty string), clear UI
-            _uiState.value =
-                _uiState.value.copy(isLoading = false, error = null, wordDefinition = emptyList())
+        // Emit to the explicit API trigger flow to initiate an immediate search
+        viewModelScope.launch {
+            _explicitSearchApiTrigger.emit(word)
         }
     }
 }
-
 
 data class MainUiState(
     val isLoading: Boolean = false,

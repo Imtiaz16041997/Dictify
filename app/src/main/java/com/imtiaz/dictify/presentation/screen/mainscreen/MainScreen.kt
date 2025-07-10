@@ -89,8 +89,9 @@ fun MainScreen(){
             val spokenText = spokenTexts?.get(0) ?: ""
 
             if (spokenText.isNotBlank()) {
-                mainViewModel.updateSearchQuery(spokenText) // Update the search bar text
-                mainViewModel.triggerWordLookup(spokenText) // Trigger the search
+                // ONLY call triggerWordLookup.
+                // triggerWordLookup already updates _searchQuery and emits to _explicitSearchTrigger.
+                mainViewModel.triggerWordLookup(spokenText)
                 focusManager.clearFocus() // Hide keyboard after voice input
             } else {
                 Toast.makeText(context, "No speech recognized.", Toast.LENGTH_SHORT).show()
