@@ -42,12 +42,7 @@ import com.imtiaz.dictify.presentation.component.MySearchBar
 
 
 import androidx.hilt.navigation.compose.hiltViewModel
-
-
-
-
-
-
+import com.imtiaz.dictify.presentation.theme.black
 
 
 @Composable
@@ -77,7 +72,7 @@ fun MainScreen(){
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.primary)
+                        .background(black) // top bar color
                         .statusBarsPadding()
                 ) {
                     Row(

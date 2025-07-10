@@ -56,7 +56,7 @@ fun MySearchBar(
             .border(
                 BorderStroke(
                     0.1.dp,
-                    SolidColor(MaterialTheme.colorScheme.onSurface)
+                    SolidColor(MaterialTheme.colorScheme.background)
                 ),
                 RoundedCornerShape(12.dp)
             ),
