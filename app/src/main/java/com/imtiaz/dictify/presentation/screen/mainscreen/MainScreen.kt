@@ -8,52 +8,26 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.imtiaz.dictify.navigation.BottomNavigationUI
 import com.imtiaz.dictify.navigation.Navigation
 import com.imtiaz.dictify.navigation.Screen
 import com.imtiaz.dictify.navigation.currentRoute
-import com.imtiaz.dictify.presentation.component.MySearchBar
 
 
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.imtiaz.dictify.presentation.theme.black
+import com.imtiaz.dictify.presentation.component.BaseTopBar
+import com.imtiaz.dictify.presentation.component.HomeTopBar
 import java.util.Locale
 
 
@@ -103,7 +77,8 @@ fun MainScreen(){
         }
     }
 
-    Scaffold(
+    //this is the similar top bar for all bottom menu
+    /*Scaffold(
         topBar = {
             if (showTopAppBarActions) {
                 Column(
@@ -119,7 +94,7 @@ fun MainScreen(){
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        IconButton(onClick = { /* Handle navigation drawer open */ }) {
+                        IconButton(onClick = { *//* Handle navigation drawer open *//* }) {
                             Icon(
                                 imageVector = Icons.Default.Menu,
                                 contentDescription = "Menu",
@@ -134,7 +109,7 @@ fun MainScreen(){
                             fontWeight = FontWeight.Bold,
                             fontSize = MaterialTheme.typography.titleLarge.fontSize
                         )
-                        IconButton(onClick = { /* Handle more options */ }) {
+                        IconButton(onClick = { *//* Handle more options *//* }) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
                                 contentDescription = "More options",
@@ -189,7 +164,59 @@ fun MainScreen(){
                 BottomNavigationUI(navController, pagerState)
             }
         }
-    ){ paddingValues ->
+    )*/
+
+    Scaffold(
+        topBar = {
+            if (showTopAppBarActions) {
+                // Dynamic Top Bar based on current route
+                when (currentRoute) {
+                    Screen.Home.route -> {
+                        HomeTopBar(
+                            searchText = searchText,
+                            onTextChange = { newValue -> mainViewModel.updateSearchQuery(newValue) },
+                            onCloseClicked = { mainViewModel.updateSearchQuery("") },
+                            onMicClicked = {
+                                println("Mic icon clicked!")
+                                launchSpeechRecognizer(speechRecognizerLauncher, context)
+                                Toast.makeText(context, "Speak now...", Toast.LENGTH_SHORT).show()
+                            },
+                            onLanguageClicked = { println("Language icon clicked!") },
+                            onSearchTriggered = { wordToSearch ->
+                                if (wordToSearch.isNotBlank()) {
+                                    mainViewModel.triggerWordLookup(wordToSearch)
+                                    focusManager.clearFocus()
+                                } else {
+                                    mainViewModel.triggerWordLookup(wordToSearch)
+                                    focusManager.clearFocus()
+                                }
+                            }
+                        )
+                    }
+                    Screen.Bookmarks.route -> {
+                        BaseTopBar(title = "Bookmarks")
+                    }
+                    Screen.Translator.route -> {
+                        BaseTopBar(title = "Translator")
+                    }
+                    Screen.Profile.route -> {
+                        BaseTopBar(title = "Profile")
+                    }
+                    else -> {
+
+                    }
+                }
+            }
+        },
+        bottomBar = {
+            if (currentRoute in bottomNavRoutes) {
+                BottomNavigationUI(navController, pagerState)
+            }
+        }
+    )
+
+
+    { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
             Navigation(navController = navController, mainViewModel = mainViewModel)
         }
