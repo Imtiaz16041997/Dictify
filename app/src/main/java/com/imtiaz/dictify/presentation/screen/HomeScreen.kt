@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
@@ -98,15 +97,14 @@ fun HomeScreen(
 
                 ErrorCard(
                     errorMessage = "${uiState.error?.message ?: "Oops! Word not found. Please double-check the spelling."}",
+                    onRetryClicked = {
+                        val lastSearchedWord = viewModel.searchQuery.value
+                        viewModel.triggerWordLookup(lastSearchedWord)
+                    },
                     modifier = Modifier
                         .padding(top = 8.dp)
                         .fillMaxWidth()
                 )
-//                Text(
-//                    text = "${uiState.error?.message ?: "Oops! Word not found. Please double-check the spelling."}",
-//                    color = MaterialTheme.colorScheme.error,
-//                    modifier = Modifier.padding(top = 8.dp)
-//                )
                 Spacer(modifier = Modifier.height(16.dp))
             }
         } else if (firstWordDefinition != null) {
@@ -117,7 +115,7 @@ fun HomeScreen(
                         ?: "Definition not available.",
                     onRefreshClicked = {
                         firstWordDefinition.word.let { word ->
-                            viewModel.lookupWordDefinition(word.toString())
+                            viewModel.triggerWordLookup(word.toString())
                         }
                     },
                     onCopyClicked = { textToCopy ->
@@ -125,7 +123,7 @@ fun HomeScreen(
                             context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                         val clipData = ClipData.newPlainText("Dictionary Definition", textToCopy)
                         clipboardManager.setPrimaryClip(clipData)
-                        Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, clipData.toString(), Toast.LENGTH_SHORT).show()
                     },
                     onPronounceClicked = { wordToPronounce ->
                         val audioUrl =
@@ -218,6 +216,5 @@ fun HomeScreen(
             }
         }
     }
-
 }
 
