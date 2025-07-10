@@ -28,7 +28,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.imtiaz.dictify.presentation.component.WordExpandableDefinition
 import com.imtiaz.dictify.presentation.screen.mainscreen.MainViewModel
+import com.imtiaz.dictify.presentation.theme.PurpleGrey40
 import java.util.Locale
 
 
@@ -80,7 +82,7 @@ fun HomeScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(PurpleGrey40),
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
         item {
@@ -150,6 +152,14 @@ fun HomeScreen(
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
+
+                WordExpandableDefinition(
+                    title = firstWordDefinition.meanings?.firstOrNull()?.definitions.toString() ?: "Definition not available.",
+                    content = firstWordDefinition.meanings?.firstOrNull()?.definitions?.firstOrNull()?.definition
+                        ?: "Definition not available.",
+                        initialExpanded = true,
+                        modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }
