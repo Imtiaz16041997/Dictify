@@ -1,5 +1,6 @@
 package com.imtiaz.dictify.di
 
+import com.google.gson.Gson
 import com.imtiaz.dictify.data.dataSource.remote.ApiService
 import com.imtiaz.dictify.data.dataSource.remote.ApiURL
 import com.imtiaz.dictify.data.repository.remote.word.DictionaryRepositoryImpl

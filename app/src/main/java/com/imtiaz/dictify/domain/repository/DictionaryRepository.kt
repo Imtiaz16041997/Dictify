@@ -6,7 +6,5 @@ import com.imtiaz.dictify.data.model.dictzilla.WordsInformation
 import kotlinx.coroutines.flow.Flow
 
 interface DictionaryRepository {
-    suspend fun getWordDefinition(
-        word: String,
-    ): Flow<DataState<List<WordResponse>>>
+    suspend fun getWordDefinition(word: String, ): Flow<DataState<List<WordResponse>>>
 }

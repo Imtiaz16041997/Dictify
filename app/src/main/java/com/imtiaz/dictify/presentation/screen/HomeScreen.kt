@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.imtiaz.dictify.presentation.component.ErrorCard
 import com.imtiaz.dictify.presentation.component.WordExpandableDefinition
 import com.imtiaz.dictify.presentation.screen.mainscreen.MainViewModel
 import java.util.Locale
@@ -94,11 +95,18 @@ fun HomeScreen(
             }
         } else if (uiState.error != null) {
             item {
-                Text(
-                    text = "Error: ${uiState.error?.localizedMessage ?: "No definition found. Try another word."}",
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 8.dp)
+
+                ErrorCard(
+                    errorMessage = "${uiState.error?.message ?: "Oops! Word not found. Please double-check the spelling."}",
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .fillMaxWidth()
                 )
+//                Text(
+//                    text = "${uiState.error?.message ?: "Oops! Word not found. Please double-check the spelling."}",
+//                    color = MaterialTheme.colorScheme.error,
+//                    modifier = Modifier.padding(top = 8.dp)
+//                )
                 Spacer(modifier = Modifier.height(16.dp))
             }
         } else if (firstWordDefinition != null) {

@@ -4,10 +4,11 @@ package com.imtiaz.dictify.data.repository.remote.word
 import com.imtiaz.dictify.data.common.DataState
 import com.imtiaz.dictify.data.dataSource.remote.ApiService
 import com.imtiaz.dictify.data.model.dictionary.WordResponse
-import com.imtiaz.dictify.data.model.dictzilla.WordsInformation
 import com.imtiaz.dictify.domain.repository.DictionaryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.HttpException
+import java.io.IOException
 import javax.inject.Inject
 
 class DictionaryRepositoryImpl @Inject constructor(
@@ -24,7 +25,17 @@ class DictionaryRepositoryImpl @Inject constructor(
             val definition = apiService.findingWordTranslation(word)
             emit(DataState.Success(definition))
         } catch (e: Exception) {
-            emit(DataState.Error(e))
+            val errorToEmit = if (e is HttpException) {
+                Exception("No Definitions Found! We couldn't find definitions for the word you were looking for")
+            }
+            else if (e is IOException) {
+                Exception("Network problem detected. Check your connection.")
+            }
+            else {
+                Exception("Something went wrong. Please try again.")
+            }
+            emit(DataState.Error(errorToEmit))
+
         }
     }
 
