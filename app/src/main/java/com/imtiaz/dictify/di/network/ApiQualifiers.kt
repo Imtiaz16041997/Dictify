@@ -1,4 +1,4 @@
-package com.imtiaz.dictify.di.qualifiers
+package com.imtiaz.dictify.di.network
 
 
 import javax.inject.Qualifier
