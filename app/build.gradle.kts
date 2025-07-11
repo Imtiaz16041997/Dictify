@@ -2,10 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
-    id("kotlin-parcelize")
-
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
+    alias(libs.plugins.dagger.hilt)
 
 }
 
@@ -42,6 +41,10 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
 }
 
@@ -95,7 +98,8 @@ dependencies {
     implementation(libs.logging.interceptor)
     //hilt
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    //kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     //biometric
     implementation(libs.androidx.biometric)
@@ -115,4 +119,10 @@ dependencies {
     implementation(libs.androidx.multidex)
     // Logger
     implementation(libs.timber)
+
+    // Room database
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+    annotationProcessor(libs.room.compiler)
 }

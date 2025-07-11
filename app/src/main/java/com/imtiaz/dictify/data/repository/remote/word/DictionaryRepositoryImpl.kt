@@ -4,7 +4,7 @@ package com.imtiaz.dictify.data.repository.remote.word
 import com.imtiaz.dictify.data.common.DataState
 import com.imtiaz.dictify.data.dataSource.remote.ApiService
 import com.imtiaz.dictify.data.model.dictionary.WordResponse
-import com.imtiaz.dictify.domain.repository.DictionaryRepository
+import com.imtiaz.dictify.domain.repository.dictionary.DictionaryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException

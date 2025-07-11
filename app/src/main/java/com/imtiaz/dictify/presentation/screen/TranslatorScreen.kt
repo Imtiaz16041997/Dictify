@@ -25,16 +25,27 @@ import androidx.navigation.NavController
 import com.imtiaz.dictify.R
 import java.util.Locale
 import androidx.compose.ui.res.painterResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.imtiaz.dictify.presentation.component.translator.LanguageSelector
 import com.imtiaz.dictify.presentation.component.translator.TranslationInputCard
 import com.imtiaz.dictify.presentation.component.translator.TranslationOutputCard
+import com.imtiaz.dictify.presentation.screen.mainscreen.translatorviewmodel.TranslatorViewModel
 
 
 @Composable
-fun TranslatorScreen(navController: NavController) {
+fun TranslatorScreen(
+    navController: NavController,
+    viewModel: TranslatorViewModel = hiltViewModel()
+
+) {
+
+    // Observe languages from the ViewModel
+    val languages by viewModel.languages.collectAsState()
+    val sourceLang by viewModel.sourceLanguage.collectAsState()
+    val targetLang by viewModel.targetLanguage.collectAsState()
     // For now, let's use local states. In a real app, these would come from a TranslatorViewModel.
-    var sourceLang by remember { mutableStateOf("English") }
-    var targetLang by remember { mutableStateOf("Spanish") }
+    //var sourceLang by remember { mutableStateOf("English") }
+    //var targetLang by remember { mutableStateOf("Spanish") }
     var inputText by remember { mutableStateOf("") }
     var translatedText by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) } // For translation loading
@@ -97,7 +108,7 @@ fun TranslatorScreen(navController: NavController) {
     ) {
         // 1. Language Selector
         item {
-            LanguageSelector(
+           /* LanguageSelector(
                 sourceLanguage = sourceLang,
                 sourceFlag = painterResource(id = R.drawable.ic_flag_us), // Replace with your actual US flag drawable
                 targetLanguage = targetLang,
@@ -114,12 +125,28 @@ fun TranslatorScreen(navController: NavController) {
                     translatedText = tempText
                     Toast.makeText(context, "Languages Swapped!", Toast.LENGTH_SHORT).show()
                 }
+            )*/
+            LanguageSelector(
+                sourceLanguage = sourceLang.name, // Use the name from the state
+                sourceFlag = painterResource(id = R.drawable.ic_flag_us),
+                targetLanguage = targetLang.name, // Use the name from the state
+                targetFlag = painterResource(id = R.drawable.ic_flag_es),
+                onSourceClick = {
+                    // Show a language selection dialog/bottom sheet with `languages` list
+                    // and call viewModel.setSourceLanguage(selectedLanguage)
+                },
+                onTargetClick = {
+                    // Show a language selection dialog/bottom sheet with `languages` list
+                    // and call viewModel.setTargetLanguage(selectedLanguage)
+                },
+                onSwapClick = { viewModel.swapLanguages() }
             )
+
         }
 
         // 2. Translation Input Card
         item {
-            TranslationInputCard(
+           /* TranslationInputCard(
                 languageLabel = sourceLang,
                 inputText = inputText,
                 onInputTextChange = { inputText = it },
@@ -162,7 +189,7 @@ fun TranslatorScreen(navController: NavController) {
                         Toast.makeText(context, "Please enter text to translate.", Toast.LENGTH_SHORT).show()
                     }
                 }
-            )
+            )*/
         }
 
 //        // Loading indicator (conditionally displayed)
@@ -175,7 +202,7 @@ fun TranslatorScreen(navController: NavController) {
         // 3. Translation Output Card (only show if not loading and translatedText is not blank)
 //        if (!isLoading && translatedText.isNotBlank()) {
             item {
-                TranslationOutputCard(
+                /*TranslationOutputCard(
                     languageLabel = targetLang,
                     translatedText = translatedText,
                     onSpeakOutput = {
@@ -204,7 +231,7 @@ fun TranslatorScreen(navController: NavController) {
                     onFavoriteClick = {
                         Toast.makeText(context, "Added to Favorites!", Toast.LENGTH_SHORT).show()
                     }
-                )
+                )*/
             }
         //}
     }

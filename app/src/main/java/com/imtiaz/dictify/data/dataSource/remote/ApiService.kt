@@ -6,19 +6,6 @@ import retrofit2.http.Path
 
 interface ApiService {
 
-//    @GET("languages")
-//    suspend fun fetchMultiLanguage(
-//    ): LanguageResponse
-//
-//    @GET("translations?")
-//    suspend fun findingWordTranslation(
-//        @Query("text") textWord: String,
-//        @Query("target") targetDestinationLang: String,
-//        @Query("source") sourceDestinationLang: String,
-//    ): WordsInformation
-
-
-
 
     @GET("entries/en/{word}")
     suspend fun findingWordTranslation(

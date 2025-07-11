@@ -1,8 +1,9 @@
-package com.imtiaz.dictify.di.dictionary
+package com.imtiaz.dictify.di.translator
 
-import com.imtiaz.dictify.data.dataSource.remote.ApiService
+
 import com.imtiaz.dictify.data.dataSource.remote.ApiURL
-import com.imtiaz.dictify.di.qualifiers.DictionaryApi
+import com.imtiaz.dictify.data.dataSource.remote.DeeplApiService
+import com.imtiaz.dictify.di.qualifiers.TranslatorApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,32 +20,32 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkModuleDictionary {
+object NetworkModuleTranslator {
 
-    @DictionaryApi
+    @TranslatorApi
     @Singleton
     @Provides
-    fun provideBaseURL(): String {
-        return ApiURL.BASE_URL
+    fun provideTranslatorBaseURL(): String {
+        return ApiURL.TRANSLATION_BASE_URL
     }
 
-    // REMOVE provideLoggingInterceptor if using CommonNetworkModule's provideLoggingInterceptor
-    // If you need a *specific* logging interceptor for dictionary, qualify it:
-    // @DictionaryApi
+    // REMOVE provideTranslatorLoggingInterceptor if using CommonNetworkModule's provideLoggingInterceptor
+    // If you need a *specific* logging interceptor for translator, qualify it:
+    // @TranslatorApi
     // @Singleton
     // @Provides
-    // fun provideLoggingInterceptor(): HttpLoggingInterceptor {
+    // fun provideTranslatorLoggingInterceptor(): HttpLoggingInterceptor {
     //     return HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
     // }
 
-    @DictionaryApi
+    @TranslatorApi
     @Singleton
     @Provides
-    fun provideOkHttpClient(
+    fun provideTranslatorOkHttpClient(
         // Inject the unqualified logging interceptor from CommonNetworkModule
         loggingInterceptor: HttpLoggingInterceptor,
         // If you used a qualified logging interceptor above, you'd do:
-        // @DictionaryApi loggingInterceptor: HttpLoggingInterceptor,
+        // @TranslatorApi loggingInterceptor: HttpLoggingInterceptor,
     ): OkHttpClient {
         val okHttpClient = OkHttpClient().newBuilder()
         okHttpClient.callTimeout(40, TimeUnit.SECONDS)
@@ -55,24 +56,24 @@ object NetworkModuleDictionary {
         return okHttpClient.build()
     }
 
-    // REMOVE provideConverterFactory if using CommonNetworkModule's provideConverterFactory
-    // If you need a *specific* converter factory for dictionary, qualify it:
-    // @DictionaryApi
+    // REMOVE provideTranslatorConverterFactory if using CommonNetworkModule's provideConverterFactory
+    // If you need a *specific* converter factory for translator, qualify it:
+    // @TranslatorApi
     // @Singleton
     // @Provides
-    // fun provideConverterFactory(): Converter.Factory {
+    // fun provideTranslatorConverterFactory(): Converter.Factory {
     //     return GsonConverterFactory.create()
     // }
 
-    @DictionaryApi // This provides an @DictionaryApi Retrofit
+    @TranslatorApi // This provides an @TranslatorApi Retrofit
     @Singleton
     @Provides
-    fun provideRetrofitClient(
-        @DictionaryApi baseUrl: String, // Consuming the qualified BaseURL
-        @DictionaryApi okHttpClient: OkHttpClient, // Consuming the qualified OkHttpClient
+    fun provideTranslatorRetrofitClient(
+        @TranslatorApi baseUrl: String, // Consuming the qualified BaseURL
+        @TranslatorApi okHttpClient: OkHttpClient, // Consuming the qualified OkHttpClient
         converterFactory: Converter.Factory, // Consuming the unqualified Converter.Factory from CommonNetworkModule
         // If you used a qualified converter factory above, you'd do:
-        // @DictionaryApi converterFactory: Converter.Factory,
+        // @TranslatorApi converterFactory: Converter.Factory,
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
@@ -81,10 +82,10 @@ object NetworkModuleDictionary {
             .build()
     }
 
-    @DictionaryApi // <--- IMPORTANT: Qualify the RETURN TYPE here!
+    @TranslatorApi // <--- IMPORTANT: Qualify the RETURN TYPE here!
     @Singleton
     @Provides
-    fun provideRestApiService(@DictionaryApi retrofit: Retrofit): ApiService {
-        return retrofit.create(ApiService::class.java)
+    fun provideTranslatorRestApiService(@TranslatorApi retrofit: Retrofit): DeeplApiService {
+        return retrofit.create(DeeplApiService::class.java)
     }
 }

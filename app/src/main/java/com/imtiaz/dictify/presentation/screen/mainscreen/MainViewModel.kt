@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.imtiaz.dictify.data.common.DataState
 import com.imtiaz.dictify.data.model.dictionary.WordResponse
-import com.imtiaz.dictify.domain.repository.DictionaryRepository
+import com.imtiaz.dictify.domain.repository.dictionary.DictionaryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
