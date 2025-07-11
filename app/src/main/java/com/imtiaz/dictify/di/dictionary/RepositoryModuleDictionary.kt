@@ -1,4 +1,4 @@
-package com.imtiaz.dictify.di
+package com.imtiaz.dictify.di.dictionary
 
 import com.imtiaz.dictify.data.dataSource.remote.ApiService
 import com.imtiaz.dictify.data.repository.remote.word.DictionaryRepositoryImpl
@@ -11,7 +11,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RepositoryModule {
+object RepositoryModuleDictionary {
     /**
      * Provides DictionaryRepository for access api service method
      */

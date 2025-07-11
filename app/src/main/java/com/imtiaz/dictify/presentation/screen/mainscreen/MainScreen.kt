@@ -27,8 +27,8 @@ import com.imtiaz.dictify.navigation.currentRoute
 
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.imtiaz.dictify.navigation.navigationTitle
-import com.imtiaz.dictify.presentation.component.BaseTopBar
-import com.imtiaz.dictify.presentation.component.HomeTopBar
+import com.imtiaz.dictify.presentation.component.common.BaseTopBar
+import com.imtiaz.dictify.presentation.component.dictionary.HomeTopBar
 import java.util.Locale
 
 

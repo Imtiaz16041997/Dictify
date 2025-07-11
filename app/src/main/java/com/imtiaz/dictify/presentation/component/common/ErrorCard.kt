@@ -1,4 +1,4 @@
-package com.imtiaz.dictify.presentation.component
+package com.imtiaz.dictify.presentation.component.common
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape

@@ -1,5 +1,4 @@
-package com.imtiaz.dictify.presentation.component
-
+package com.imtiaz.dictify.presentation.component.dictionary
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,18 +17,22 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BaseTopBar(title: String) {
+fun HomeTopBar(
+    searchText: String,
+    onTextChange: (String) -> Unit,
+    onCloseClicked: () -> Unit,
+    onMicClicked: () -> Unit,
+    onLanguageClicked: () -> Unit,
+    onSearchTriggered: (String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -69,5 +72,17 @@ fun BaseTopBar(title: String) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        MySearchBar( // Assuming MySearchBar is a custom composable you have
+            modifier = Modifier.padding(horizontal = 16.dp),
+            text = searchText,
+            onTextChange = onTextChange,
+            placeholder = "Search word...",
+            onCloseClicked = onCloseClicked,
+            onMicClicked = onMicClicked,
+            onLanguageClicked = onLanguageClicked,
+            onSearchTriggered = onSearchTriggered
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }

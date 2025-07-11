@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.imtiaz.dictify.presentation.component.WordDefinitionCard
+import com.imtiaz.dictify.presentation.component.dictionary.WordDefinitionCard
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -27,8 +27,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.imtiaz.dictify.presentation.component.ErrorCard
-import com.imtiaz.dictify.presentation.component.WordExpandableDefinition
+import com.imtiaz.dictify.presentation.component.common.ErrorCard
+import com.imtiaz.dictify.presentation.component.dictionary.WordExpandableDefinition
 import com.imtiaz.dictify.presentation.screen.mainscreen.MainViewModel
 import java.util.Locale
 

@@ -15,7 +15,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,9 +25,9 @@ import androidx.navigation.NavController
 import com.imtiaz.dictify.R
 import java.util.Locale
 import androidx.compose.ui.res.painterResource
-import com.imtiaz.dictify.presentation.component.LanguageSelector
-import com.imtiaz.dictify.presentation.component.TranslationInputCard
-import com.imtiaz.dictify.presentation.component.TranslationOutputCard
+import com.imtiaz.dictify.presentation.component.translator.LanguageSelector
+import com.imtiaz.dictify.presentation.component.translator.TranslationInputCard
+import com.imtiaz.dictify.presentation.component.translator.TranslationOutputCard
 
 
 @Composable

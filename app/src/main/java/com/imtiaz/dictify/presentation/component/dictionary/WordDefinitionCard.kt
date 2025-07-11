@@ -1,4 +1,4 @@
-package com.imtiaz.dictify.presentation.component
+package com.imtiaz.dictify.presentation.component.dictionary
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween

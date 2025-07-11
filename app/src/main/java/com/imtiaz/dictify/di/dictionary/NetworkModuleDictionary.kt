@@ -1,11 +1,7 @@
-package com.imtiaz.dictify.di
+package com.imtiaz.dictify.di.dictionary
 
-import com.google.gson.Gson
 import com.imtiaz.dictify.data.dataSource.remote.ApiService
 import com.imtiaz.dictify.data.dataSource.remote.ApiURL
-import com.imtiaz.dictify.data.repository.remote.word.DictionaryRepositoryImpl
-import com.imtiaz.dictify.domain.repository.DictionaryRepository
-import com.imtiaz.dictify.network.ApiKeyInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,7 +16,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkModule {
+object NetworkModuleDictionary {
     /**
      * Provides BaseUrl as string
      */

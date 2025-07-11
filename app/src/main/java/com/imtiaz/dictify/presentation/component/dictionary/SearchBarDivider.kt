@@ -1,4 +1,4 @@
-package com.imtiaz.dictify.presentation.component
+package com.imtiaz.dictify.presentation.component.dictionary
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width

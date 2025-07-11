@@ -1,4 +1,4 @@
-package com.imtiaz.dictify.presentation.component
+package com.imtiaz.dictify.presentation.component.translator
 
 
 import androidx.compose.foundation.layout.*

@@ -1,10 +1,5 @@
-package com.imtiaz.dictify.presentation.component
+package com.imtiaz.dictify.presentation.component.dictionary
 
-import android.content.Context
-import android.content.Intent
-import android.speech.RecognizerIntent
-import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -39,7 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.imtiaz.dictify.presentation.theme.Cranberry
-import java.util.Locale
 
 
 @Composable
