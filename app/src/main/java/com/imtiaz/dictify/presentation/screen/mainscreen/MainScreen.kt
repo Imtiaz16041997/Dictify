@@ -26,6 +26,7 @@ import com.imtiaz.dictify.navigation.currentRoute
 
 
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.imtiaz.dictify.navigation.navigationTitle
 import com.imtiaz.dictify.presentation.component.BaseTopBar
 import com.imtiaz.dictify.presentation.component.HomeTopBar
 import java.util.Locale
@@ -193,14 +194,12 @@ fun MainScreen(){
                             }
                         )
                     }
-                    Screen.Bookmarks.route -> {
-                        BaseTopBar(title = "Bookmarks")
-                    }
-                    Screen.Translator.route -> {
-                        BaseTopBar(title = "Translator")
-                    }
+                    Screen.Bookmarks.route,
+                    Screen.Translator.route,
                     Screen.Profile.route -> {
-                        BaseTopBar(title = "Profile")
+                        // Get the title dynamically based on the current route
+                        val screenTitle = navigationTitle(navController)
+                        BaseTopBar(title = screenTitle)
                     }
                     else -> {
 

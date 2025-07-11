@@ -69,7 +69,7 @@ fun HomeScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(MaterialTheme.colorScheme.onSurface),
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
         item {
