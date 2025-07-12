@@ -128,9 +128,9 @@ fun PreviewLanguageSelector() {
     MaterialTheme {
         LanguageSelector(
             sourceLanguage = "English",
-            sourceFlag = painterResource(id = R.drawable.ic_flag_us), // Replace with your actual drawable
+            sourceFlag = painterResource(id = R.drawable.ic_flag_ussss), // Replace with your actual drawable
             targetLanguage = "Spanish",
-            targetFlag = painterResource(id = R.drawable.ic_flag_es), // Replace with your actual drawable
+            targetFlag = painterResource(id = R.drawable.ic_flag_ess), // Replace with your actual drawable
             onSourceClick = {},
             onTargetClick = {},
             onSwapClick = {}
