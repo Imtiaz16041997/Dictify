@@ -1,103 +1,109 @@
 package com.imtiaz.dictify.presentation.component.dictionary
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
+
+
+import androidx.compose.foundation.background
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
+
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.background
-
-
-
+import com.imtiaz.dictify.presentation.theme.Cranberry
 
 @Composable
-fun WordExpandableDefinition(
-    modifier: Modifier = Modifier,
-    title: String,
-    content: String,
-    titleColor: Color = MaterialTheme.colorScheme.onSurface,
-    contentColor: Color = MaterialTheme.colorScheme.onSurface,
-    headerBackgroundColor: Color = MaterialTheme.colorScheme.surface,
-    contentBackgroundColor: Color = MaterialTheme.colorScheme.surface,
-    initialExpanded: Boolean = false
+fun WordDefinitionCard(
+    word: String,
+    definition: String,
+    onRefreshClicked: () -> Unit,
+    onCopyClicked: (String) -> Unit,
+    onPronounceClicked: (String) -> Unit,
+    isFavorite: Boolean, // NEW: Pass favorite status
+    onFavoriteClicked: () -> Unit, // NEW: Change parameter type to simple lambda
+    modifier: Modifier = Modifier
 ) {
-    var expanded by remember { mutableStateOf(initialExpanded) }
-
-    Card(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        // **FIX**: Set the Card's containerColor to match the headerBackgroundColor.
-        // This ensures the whole card area has a consistent background, even when collapsed.
-        colors = CardDefaults.cardColors(containerColor = headerBackgroundColor)
+            .clip(RoundedCornerShape(12.dp))
+            .background(Cranberry) // Assuming Cranberry is this color, otherwise define it
+            .padding(16.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .animateContentSize(animationSpec = tween(durationMillis = 300))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Header Row: Title and Expand/Collapse Icon with its own background
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    // No need to apply background here if Card's containerColor handles it
-                    // .background(headerBackgroundColor) // <-- REMOVE OR COMMENT THIS LINE
-                    .clickable { expanded = !expanded }
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = title,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = titleColor,
-                    modifier = Modifier.weight(1f)
+            Text(
+                text = word,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.background
+            )
+            IconButton(onClick = { onPronounceClicked(word) }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                    contentDescription = "Pronounce",
+                    tint = Color.Black,
+                    modifier = Modifier.size(24.dp)
                 )
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
 
-                IconButton(onClick = { expanded = !expanded }) {
-                    Icon(
-                        imageVector = if (expanded) Icons.Default.Remove else Icons.Default.Add,
-                        contentDescription = if (expanded) "Collapse" else "Expand",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+        Text(
+            text = definition,
+            fontSize = 16.sp,
+            color = MaterialTheme.colorScheme.background
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            IconButton(onClick = onRefreshClicked) {
+                Icon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = "Refresh Definition",
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            IconButton(onClick = { onCopyClicked(definition) }) {
+                Icon(
+                    imageVector = Icons.Default.ContentCopy,
+                    contentDescription = "Copy Definition",
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(20.dp)
+                )
             }
 
-            // Collapsible Content with its own background
-            if (expanded) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(contentBackgroundColor) // Apply content background color here
-                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                ) {
-                    Text(
-                        text = content,
-                        fontSize = 16.sp,
-                        color = contentColor,
-                    )
-                }
+            Spacer(modifier = Modifier.width(8.dp))
+            IconButton(onClick = onFavoriteClicked) { // NEW: Simplified onClick
+                Icon(
+                    imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Default.FavoriteBorder, // NEW: Conditional icon
+                    contentDescription = if (isFavorite) "Remove from Favorites" else "Add to Favorites",
+                    tint = if (isFavorite) Color.Red else MaterialTheme.colorScheme.onSurface, // NEW: Conditional tint
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
     }
@@ -105,21 +111,113 @@ fun WordExpandableDefinition(
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewWordExpandableDefinitionWithBackgrounds() {
+fun PreviewWordDefinitionCard() {
     MaterialTheme { // Use your app's theme here
-        Column(modifier = Modifier.padding(16.dp)) {
-            WordExpandableDefinition(
-                title = "Definition",
-                content = "A word or phrase used to describe a thing or to express a concept...",
-                initialExpanded = true,
-                titleColor = Color.White, // Example title color
-                contentColor = Color.LightGray, // Example content text color
-                headerBackgroundColor = Color(0xFF6200EE), // Deep Purple for header
-                contentBackgroundColor = Color(0xFF3700B3), // Darker Purple for content
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-
-        }
+        WordDefinitionCard(
+            word = "Emotions",
+            definition = "An emotion is a strong feeling, like the emotion you feel when you see your best friend at the movies with a group of people who cause trouble for you.",
+            modifier = Modifier.padding(16.dp),
+            onRefreshClicked = {},
+            onCopyClicked = {},
+            onPronounceClicked = {},
+            isFavorite = true,
+            onFavoriteClicked = {}
+        )
     }
 }
+
+
+
+//@Composable
+//fun WordDefinitionCard(
+//    modifier: Modifier = Modifier,
+//    word: String,
+//    definition: String,
+//    onRefreshClicked: () -> Unit = {},
+//    onCopyClicked: (String) -> Unit = {}, // Passes the word to be copied
+//    onPronounceClicked: (String) -> Unit = {} // Passes the word to be pronounced
+//) {
+//    Card(
+//        modifier = modifier
+//            .fillMaxWidth()
+//            .clip(RoundedCornerShape(12.dp)), // Apply rounded corners to the card
+//        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp), // Add a subtle shadow
+//        colors = CardDefaults.cardColors(containerColor = light) // Card background
+//    ) {
+//        Column(
+//            modifier = Modifier.padding(16.dp) // Padding inside the card
+//        ) {
+//            // Top Row: Word Title and Action Buttons
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.SpaceBetween // Pushes content to ends
+//            ) {
+//                // Word Title
+//                Text(
+//                    text = word,
+//                    style = MaterialTheme.typography.headlineMedium, // Adjust typography as needed
+//                    color = MaterialTheme.colorScheme.onSurface,
+//                    modifier = Modifier.weight(1f) // Makes text take available space, pushing icons right
+//                )
+//
+//                // Action Buttons (Refresh, Copy, Pronounce)
+//                Row(
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    // Refresh Button
+//                    IconButton(onClick = onRefreshClicked) {
+//                        Icon(
+//                            imageVector = Icons.Default.Refresh, // or a custom refresh icon
+//                            contentDescription = "Refresh Definition",
+//                            tint = MaterialTheme.colorScheme.onSurfaceVariant, // A muted color
+//                            modifier = Modifier.size(24.dp)
+//                        )
+//                    }
+//
+//                    // Copy Button
+//                    IconButton(onClick = { onCopyClicked(word + "\n" + definition) }) { // Pass combined text
+//                        Icon(
+//                            imageVector = Icons.Default.ContentCopy, // Copy icon
+//                            contentDescription = "Copy Definition",
+//                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+//                            modifier = Modifier.size(24.dp)
+//                        )
+//                    }
+//
+//                    // Pronunciation Button
+//                    IconButton(onClick = { onPronounceClicked(word) }) { // Pass the word for pronunciation
+//                        Icon(
+//                            imageVector = Icons.Default.VolumeUp, // Volume icon for pronunciation
+//                            contentDescription = "Pronounce Word",
+//                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+//                            modifier = Modifier.size(24.dp)
+//                        )
+//                    }
+//                }
+//            }
+//
+//            Spacer(modifier = Modifier.height(8.dp)) // Space between title/buttons and description
+//
+//            // Description
+//            Text(
+//                text = definition,
+//                style = MaterialTheme.typography.bodyMedium, // Adjust typography as needed
+//                color = MaterialTheme.colorScheme.onSurfaceVariant,
+//                modifier = Modifier.fillMaxWidth()
+//            )
+//        }
+//    }
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewWordDefinitionCard() {
+//    MaterialTheme { // Use your app's theme here
+//        WordDefinitionCard(
+//            word = "Emotions",
+//            definition = "An emotion is a strong feeling, like the emotion you feel when you see your best friend at the movies with a group of people who cause trouble for you.",
+//            modifier = Modifier.padding(16.dp)
+//        )
+//    }
+//}

@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.imtiaz.dictify.presentation.component.common.ErrorCard
 import com.imtiaz.dictify.presentation.component.dictionary.WordExpandableDefinition
+import com.imtiaz.dictify.presentation.screen.mainscreen.dictionaryviewmodel.MainViewModel
 import java.util.Locale
 
 
@@ -39,7 +40,7 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-
+    val isCurrentWordFavorite by viewModel.isCurrentWordFavorite.collectAsState()
     val textToSpeechState = remember { mutableStateOf<TextToSpeech?>(null) }
 
     DisposableEffect(context) {
@@ -126,13 +127,18 @@ fun HomeScreen(
                     },
                     onPronounceClicked = { wordToPronounce ->
                         val audioUrl =
-                            firstWordDefinition.phonetics?.firstOrNull { it.audio?.isNotBlank() == true }?.audio
+                            firstWordDefinition.phonetics.firstOrNull { it.audio?.isNotBlank() == true }?.audio
                         if (audioUrl != null) {
                             textToSpeech?.speak(wordToPronounce, TextToSpeech.QUEUE_FLUSH, null, "")
                         } else {
                             textToSpeech?.speak(wordToPronounce, TextToSpeech.QUEUE_FLUSH, null, "")
                         }
+                    },
+                    isFavorite = isCurrentWordFavorite,
+                    onFavoriteClicked = {
+                        viewModel.toggleFavoriteWord(firstWordDefinition) // NEW: Call ViewModel function
                     }
+
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }

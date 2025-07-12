@@ -20,15 +20,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.navigation.compose.rememberNavController
 import com.imtiaz.dictify.navigation.component.BottomNavigationUI
-import com.imtiaz.dictify.navigation.Navigation
 import com.imtiaz.dictify.navigation.Screen
 import com.imtiaz.dictify.navigation.currentRoute
-
-
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.imtiaz.dictify.navigation.AppNavGraph
 import com.imtiaz.dictify.navigation.navigationTitle
 import com.imtiaz.dictify.presentation.component.common.BaseTopBar
 import com.imtiaz.dictify.presentation.component.dictionary.HomeTopBar
+import com.imtiaz.dictify.presentation.screen.mainscreen.dictionaryviewmodel.MainViewModel
 import java.util.Locale
 
 
@@ -217,7 +216,7 @@ fun MainScreen(){
 
     { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
-            Navigation(navController = navController, mainViewModel = mainViewModel)
+            AppNavGraph(navController = navController, mainViewModel = mainViewModel)
         }
     }
 }

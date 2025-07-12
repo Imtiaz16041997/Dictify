@@ -11,72 +11,36 @@ import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.imtiaz.dictify.R
 
 sealed class Screen(
     val route: String,
-    @StringRes val title: Int = R.string.app_name,
-    val navIcon: (@Composable () -> Unit) = {
-        Icon(
-            Icons.Filled.Home, contentDescription = "home"
-        )
-    },
+    @StringRes val titleResId: Int = R.string.app_name, // Renamed for clarity
+    val icon: ImageVector? = null, // Store ImageVector, not a @Composable lambda
     val objectName: String = "",
-    val objectPath: String = ""
+    val objectPath: String = "" // For path arguments
 ) {
-    //bottom screen
-    data object  Home : Screen ("home_page")
-    data object  Bookmarks : Screen ("book_mark_page")
-    data object  Translator : Screen ("translator_page")
-    data object  Profile : Screen ("profile_page")
+    // Bottom Navigation Destinations (these are the actual screen routes)
+    data object Home : Screen("home_route", R.string.home, Icons.Filled.Home) // Add icons here
+    data object Bookmarks : Screen("bookmarks_route", R.string.book_mark, Icons.Filled.Bookmarks)
+    data object Translator : Screen("translator_route", R.string.translator, Icons.Filled.Translate)
+    data object Profile : Screen("profile_route", R.string.profile, Icons.Filled.AccountBox)
 
+    // Detail Screens or other specific routes
+    // For WordDetail, specify the argument
+    data object WordDetail : Screen(
+        route = "word_detail_route/{wordItem}", // Define argument in the route
+        titleResId = R.string.word_detail, // Assuming you have this string
+        objectName = "wordItem" // Name of the argument
+    ) {
+        // Helper function to create the route with the actual word
+        fun createRoute(wordItem: String): String {
+            return "word_detail_route/${wordItem}"
+        }
+    }
 
-    //Bottom Navigation
-
-    data object HomeNav : Screen("home_page", title = R.string.home, navIcon = {
-        Icon(
-            Icons.Filled.Home,
-            contentDescription = "search",
-            modifier = Modifier
-                .padding(end = 16.dp)
-                .offset(x = 10.dp)
-        )
-    })
-
-    data object BookmarksNav : Screen("book_mark_page", title = R.string.book_mark, navIcon = {
-        Icon(
-            Icons.Filled.Bookmarks,
-            contentDescription = "search",
-            modifier = Modifier
-                .padding(end = 16.dp)
-                .offset(x = 10.dp)
-        )
-    })
-
-    data object TranslatorNav : Screen("translator_page", title = R.string.translator, navIcon = {
-        Icon(
-            Icons.Filled.Translate,
-            contentDescription = "search",
-            modifier = Modifier
-                .padding(end = 16.dp)
-                .offset(x = 10.dp)
-        )
-    })
-
-    data object ProfileNav : Screen("profile_page", title = R.string.profile, navIcon = {
-        Icon(
-            Icons.Filled.AccountBox,
-            contentDescription = "search",
-            modifier = Modifier
-                .padding(end = 16.dp)
-                .offset(x = 10.dp)
-        )
-    })
-
-    data object WordDetail : Screen("word_detail", objectName = "wordItem", objectPath = "/{wordItem}")
-
-
-
-
+    // You can add more routes here for other features
+    // data object Settings : Screen("settings_route", R.string.settings_title)
 }

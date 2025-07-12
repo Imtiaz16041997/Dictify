@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.Room
 import com.imtiaz.dictify.data.dataSource.local.LanguageDatabase
 import com.imtiaz.dictify.data.dataSource.local.LanguageRoomDao
+import com.imtiaz.dictify.data.local.dao.DictionaryDao
 import com.imtiaz.dictify.di.dictionary.DictionaryRepositoryModule
 import com.imtiaz.dictify.di.translator.TranslatorRepositoryModule
+import com.imtiaz.dictify.di.tts.TextToSpeechModule
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,7 +19,8 @@ import javax.inject.Singleton
     includes = [
         NetworkModule::class,
         DictionaryRepositoryModule::class,
-        TranslatorRepositoryModule::class
+        TranslatorRepositoryModule::class,
+        TextToSpeechModule::class
     ]
 )
 @InstallIn(SingletonComponent::class)
@@ -37,6 +40,12 @@ object AppModule {
     @Singleton
     fun provideLanguageDao(database: LanguageDatabase): LanguageRoomDao {
         return database.languageDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDictionaryDao(database: LanguageDatabase): DictionaryDao {
+        return database.dictionaryDao()
     }
 
 
