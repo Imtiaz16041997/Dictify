@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.imtiaz.dictify.data.dataSource.local.LanguageDatabase
 import com.imtiaz.dictify.data.dataSource.local.dao.LanguageDao
-import com.imtiaz.dictify.di.dictionary.RepositoryModuleDictionary
-import com.imtiaz.dictify.di.translator.RepositoryModuleTranslator
+import com.imtiaz.dictify.di.dictionary.DictionaryRepositoryModule
+import com.imtiaz.dictify.di.translator.TranslatorRepositoryModule
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,8 +16,8 @@ import javax.inject.Singleton
 @Module(
     includes = [
         NetworkModule::class,
-        RepositoryModuleDictionary::class,
-        RepositoryModuleTranslator::class
+        DictionaryRepositoryModule::class,
+        TranslatorRepositoryModule::class
     ]
 )
 @InstallIn(SingletonComponent::class)

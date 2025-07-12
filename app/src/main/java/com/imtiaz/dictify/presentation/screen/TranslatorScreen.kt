@@ -36,7 +36,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import com.imtiaz.dictify.data.repository.remote.common.TranslatorEvent
 import com.imtiaz.dictify.presentation.component.LanguageSelectionDialog
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun TranslatorScreen(
@@ -55,8 +57,9 @@ fun TranslatorScreen(
     val context = LocalContext.current
 
     // TextToSpeech for input and output pronunciation
-    val textToSpeechState = remember { mutableStateOf<TextToSpeech?>(null) }
-    DisposableEffect(context) {
+   /* val textToSpeechState = remember { mutableStateOf<TextToSpeech?>(null) }
+
+    /*DisposableEffect(context) {
         lateinit var ttsInstance: TextToSpeech
         val listener = TextToSpeech.OnInitListener { status ->
             if (status == TextToSpeech.SUCCESS) {
@@ -73,14 +76,30 @@ fun TranslatorScreen(
             ttsInstance.shutdown()
             Log.d("TranslatorScreen", "TextToSpeech shutdown.")
         }
-    }
+    }*/
+
+    viewModel.speakInputText()
+    viewModel.speakTranslatedText()
     val textToSpeech = textToSpeechState.value
 
+    */
+
     // Show error as a Toast
-    LaunchedEffect(translationError) {
-        translationError?.let {
-            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-            // You might want to clear the error after showing it, e.g., viewModel.clearTranslationError()
+//    LaunchedEffect(translationError) {
+//        translationError?.let {
+//            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+//            // You might want to clear the error after showing it, e.g., viewModel.clearTranslationError()
+//        }
+//    }
+
+    LaunchedEffect(Unit) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is TranslatorEvent.ShowToast -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
+                }
+                // Handle other events here if you add them (e.g., navigation)
+            }
         }
     }
 
@@ -144,7 +163,8 @@ fun TranslatorScreen(
                 },
                 onClearInput = { viewModel.clearInputText() },
                 onSpeakInput = {
-                    if (textToSpeech != null && inputText.isNotBlank()) {
+                    viewModel.speakInputText()
+                    /*if (textToSpeech != null && inputText.isNotBlank()) {
                         // Set TTS language for source, if supported
                         val locale = Locale(sourceLang.language.lowercase())
                         val result = textToSpeech.setLanguage(locale)
@@ -157,7 +177,7 @@ fun TranslatorScreen(
                         }
                     } else {
                         Toast.makeText(context, "No text to speak or TTS not ready.", Toast.LENGTH_SHORT).show()
-                    }
+                    }*/
                 },
                 onMicClick = {
                     val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
@@ -184,7 +204,8 @@ fun TranslatorScreen(
                     languageLabel = targetLang.name,
                     translatedText = translatedText,
                     onSpeakOutput = {
-                        if (textToSpeech != null && translatedText.isNotBlank()) {
+                        viewModel.speakTranslatedText()
+                        /*if (textToSpeech != null && translatedText.isNotBlank()) {
                             // Set language for output TTS based on targetLang
                             val locale = Locale(targetLang.language.lowercase())
                             val result = textToSpeech.setLanguage(locale)
@@ -197,7 +218,7 @@ fun TranslatorScreen(
                             }
                         } else {
                             Toast.makeText(context, "No translated text to speak or TTS not ready.", Toast.LENGTH_SHORT).show()
-                        }
+                        }*/
                     },
                     onCopyOutput = {
                         val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager

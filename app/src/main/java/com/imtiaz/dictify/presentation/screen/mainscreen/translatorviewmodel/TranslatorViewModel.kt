@@ -6,21 +6,31 @@ import androidx.lifecycle.viewModelScope
 import com.imtiaz.dictify.R
 import com.imtiaz.dictify.data.common.DataState
 import com.imtiaz.dictify.data.model.translation.Language
-import com.imtiaz.dictify.data.model.translation.getFlagResIdForLanguageCode
+import com.imtiaz.dictify.data.repository.remote.common.TranslatorEvent
+import com.imtiaz.dictify.domain.repository.common.TextToSpeechService
 import com.imtiaz.dictify.domain.repository.translator.LanguageRepository
+import com.imtiaz.dictify.utils.FlagMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
 class TranslatorViewModel @Inject constructor(
-    private val languageRepository: LanguageRepository
+    private val languageRepository: LanguageRepository,
+    private val ttsService: TextToSpeechService
 ) : ViewModel() {
+
+    private val _eventFlow = MutableSharedFlow<TranslatorEvent>()
+    val eventFlow: SharedFlow<TranslatorEvent> = _eventFlow.asSharedFlow()
 
     // StateFlow for the list of available languages
     private val _languages = MutableStateFlow<List<Language>>(emptyList())
@@ -31,7 +41,7 @@ class TranslatorViewModel @Inject constructor(
         Language(
             "en",
             "English",
-            getFlagResIdForLanguageCode("en") // Use the utility function for initial flags
+            FlagMapper.getFlagResIdForLanguageCode( code= "en") // Use the utility function for initial flags
         )
     )
     val sourceLanguage: StateFlow<Language> = _sourceLanguage.asStateFlow()
@@ -41,7 +51,7 @@ class TranslatorViewModel @Inject constructor(
         Language(
             "es",
             "Spanish",
-            getFlagResIdForLanguageCode("es") // Use the utility function for initial flags
+            FlagMapper.getFlagResIdForLanguageCode( code= "es") // Use the utility function for initial flags
         )
     )
     val targetLanguage: StateFlow<Language> = _targetLanguage.asStateFlow()
@@ -82,6 +92,33 @@ class TranslatorViewModel @Inject constructor(
 
     fun closeTargetLanguageDialog() {
         _showTargetLanguageDialog.value = false
+    }
+
+    fun speakInputText() {
+        if (_inputText.value.isNotBlank()) {
+            ttsService.speak(_inputText.value, _sourceLanguage.value.language)
+        } else {
+            // Emit a toast event if there's no text to speak
+            viewModelScope.launch {
+                _eventFlow.emit(TranslatorEvent.ShowToast("No text to speak."))
+            }
+        }
+    }
+
+    fun speakTranslatedText() {
+        if (_translatedText.value.isNotBlank()) {
+            ttsService.speak(_translatedText.value, _targetLanguage.value.language)
+        } else {
+            // Emit a toast event if there's no translated text
+            viewModelScope.launch {
+                _eventFlow.emit(TranslatorEvent.ShowToast("No translated text to speak."))
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        ttsService.shutdown() // Essential for releasing TTS resources
     }
 
 
