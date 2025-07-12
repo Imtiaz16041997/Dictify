@@ -1,6 +1,6 @@
-package com.imtiaz.dictify.domain.repository.dictionary
+package com.imtiaz.dictify.domain.dictionary
 
-import com.imtiaz.dictify.data.common.DataState
+import com.imtiaz.dictify.domain.common.DataState
 import com.imtiaz.dictify.data.model.dictionary.WordResponse
 import kotlinx.coroutines.flow.Flow
 

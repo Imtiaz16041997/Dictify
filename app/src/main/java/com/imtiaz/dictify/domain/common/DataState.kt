@@ -1,4 +1,4 @@
-package com.imtiaz.dictify.data.common
+package com.imtiaz.dictify.domain.common
 
 sealed class DataState<out R> {
     data class Success<out T>(val data: T) : DataState<T>()

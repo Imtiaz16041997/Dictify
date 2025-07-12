@@ -11,10 +11,10 @@ import androidx.compose.ui.unit.dp
 
 
 import androidx.compose.foundation.background
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,7 +54,7 @@ fun WordDefinitionCard(
             )
             IconButton(onClick = { onPronounceClicked(word) }) {
                 Icon(
-                    imageVector = Icons.Default.VolumeUp,
+                    imageVector = Icons.AutoMirrored.Filled.VolumeUp,
                     contentDescription = "Pronounce",
                     tint = Color.Black, // Or MaterialTheme.colorScheme.primary
                     modifier = Modifier.size(24.dp)

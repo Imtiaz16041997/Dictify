@@ -1,10 +1,9 @@
-package com.imtiaz.dictify.data.repository.remote.word
+package com.imtiaz.dictify.data.repository.remote.dictionary
 
-
-import com.imtiaz.dictify.data.common.DataState
 import com.imtiaz.dictify.data.dataSource.remote.ApiService
 import com.imtiaz.dictify.data.model.dictionary.WordResponse
-import com.imtiaz.dictify.domain.repository.dictionary.DictionaryRepository
+import com.imtiaz.dictify.domain.common.DataState
+import com.imtiaz.dictify.domain.dictionary.DictionaryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -27,11 +26,9 @@ class DictionaryRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             val errorToEmit = if (e is HttpException) {
                 Exception("No Definitions Found! We couldn't find definitions for the word you were looking for")
-            }
-            else if (e is IOException) {
+            } else if (e is IOException) {
                 Exception("Network problem detected. Check your connection.")
-            }
-            else {
+            } else {
                 Exception("Something went wrong. Please try again.")
             }
             emit(DataState.Error(errorToEmit))

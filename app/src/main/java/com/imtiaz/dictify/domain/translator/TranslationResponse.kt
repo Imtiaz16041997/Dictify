@@ -1,4 +1,4 @@
-package com.imtiaz.dictify.data.model.translation
+package com.imtiaz.dictify.domain.translator
 
 
 import com.google.gson.annotations.SerializedName

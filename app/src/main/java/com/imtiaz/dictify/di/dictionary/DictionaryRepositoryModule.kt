@@ -1,8 +1,8 @@
 package com.imtiaz.dictify.di.dictionary
 
 import com.imtiaz.dictify.data.dataSource.remote.ApiService
-import com.imtiaz.dictify.data.repository.remote.word.DictionaryRepositoryImpl
-import com.imtiaz.dictify.domain.repository.dictionary.DictionaryRepository
+import com.imtiaz.dictify.data.repository.remote.dictionary.DictionaryRepositoryImpl
+import com.imtiaz.dictify.domain.dictionary.DictionaryRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

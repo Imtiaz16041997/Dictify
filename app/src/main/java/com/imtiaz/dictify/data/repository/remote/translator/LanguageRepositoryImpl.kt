@@ -1,19 +1,19 @@
 package com.imtiaz.dictify.data.repository.remote.translator
 
 
-import com.imtiaz.dictify.data.common.DataState
-import com.imtiaz.dictify.data.dataSource.local.dao.LanguageDao
+import com.imtiaz.dictify.domain.common.DataState
+import com.imtiaz.dictify.data.dataSource.local.LanguageRoomDao
 import com.imtiaz.dictify.data.dataSource.remote.DeeplApiService
-import com.imtiaz.dictify.domain.repository.translator.LanguageRepository
+import com.imtiaz.dictify.domain.translator.LanguageRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
-import com.imtiaz.dictify.data.model.translation.Language
-import com.imtiaz.dictify.data.model.translation.TranslationRequest
+import com.imtiaz.dictify.domain.translator.Language
+import com.imtiaz.dictify.domain.translator.TranslationRequest
 
 
 class LanguageRepositoryImpl @Inject constructor(
-    private val languageDao: LanguageDao,
+    private val languageDao: LanguageRoomDao,
     private val deeplApi: DeeplApiService
 ) : LanguageRepository {
 

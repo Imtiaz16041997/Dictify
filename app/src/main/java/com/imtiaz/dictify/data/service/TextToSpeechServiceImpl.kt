@@ -1,9 +1,9 @@
-package com.imtiaz.dictify.data.repository.remote.common
+package com.imtiaz.dictify.data.service
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
 import android.util.Log
-import com.imtiaz.dictify.domain.repository.common.TextToSpeechService
+import com.imtiaz.dictify.domain.service.TextToSpeechService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Locale
 import javax.inject.Inject
@@ -32,7 +32,7 @@ class TextToSpeechServiceImpl @Inject constructor(@ApplicationContext private va
         }
 
         // If it reaches here, it means isInitialized is true, so proceed with speaking
-        val locale = Locale(languageCode.lowercase())
+        val locale = Locale.forLanguageTag(languageCode)
         val result = tts?.setLanguage(locale)
 
         if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {

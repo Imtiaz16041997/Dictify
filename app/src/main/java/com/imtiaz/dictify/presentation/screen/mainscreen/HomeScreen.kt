@@ -1,4 +1,4 @@
-package com.imtiaz.dictify.presentation.screen
+package com.imtiaz.dictify.presentation.screen.mainscreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
@@ -29,7 +29,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.imtiaz.dictify.presentation.component.common.ErrorCard
 import com.imtiaz.dictify.presentation.component.dictionary.WordExpandableDefinition
-import com.imtiaz.dictify.presentation.screen.mainscreen.MainViewModel
 import java.util.Locale
 
 

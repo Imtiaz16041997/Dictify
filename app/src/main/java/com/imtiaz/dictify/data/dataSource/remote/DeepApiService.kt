@@ -1,9 +1,8 @@
 package com.imtiaz.dictify.data.dataSource.remote
 
-import com.imtiaz.dictify.data.model.translation.Language
 import com.imtiaz.dictify.data.model.translation.LanguageApiDto
-import com.imtiaz.dictify.data.model.translation.TranslationRequest
-import com.imtiaz.dictify.data.model.translation.TranslationResponse
+import com.imtiaz.dictify.domain.translator.TranslationRequest
+import com.imtiaz.dictify.domain.translator.TranslationResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers

@@ -37,6 +37,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+        freeCompilerArgs += "-Xannotation-default-target=param-property"
     }
     buildFeatures {
         compose = true

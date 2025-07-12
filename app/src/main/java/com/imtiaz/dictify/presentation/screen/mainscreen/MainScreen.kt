@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.navigation.compose.rememberNavController
-import com.imtiaz.dictify.navigation.BottomNavigationUI
+import com.imtiaz.dictify.navigation.component.BottomNavigationUI
 import com.imtiaz.dictify.navigation.Navigation
 import com.imtiaz.dictify.navigation.Screen
 import com.imtiaz.dictify.navigation.currentRoute

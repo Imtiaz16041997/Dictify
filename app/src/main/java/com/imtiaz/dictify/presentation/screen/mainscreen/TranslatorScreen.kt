@@ -1,4 +1,4 @@
-package com.imtiaz.dictify.presentation.screen
+package com.imtiaz.dictify.presentation.screen.mainscreen
 
 import android.app.Activity
 import android.content.ClipData
@@ -6,8 +6,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.speech.RecognizerIntent
-import android.speech.tts.TextToSpeech
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import java.util.Locale
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.imtiaz.dictify.presentation.component.translator.LanguageSelector
@@ -30,14 +27,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import com.imtiaz.dictify.data.repository.remote.common.TranslatorEvent
-import com.imtiaz.dictify.presentation.component.LanguageSelectionDialog
+import com.imtiaz.dictify.presentation.screen.mainscreen.translatorviewmodel.TranslatorEvent
+import com.imtiaz.dictify.presentation.component.translator.LanguageSelectionDialog
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable

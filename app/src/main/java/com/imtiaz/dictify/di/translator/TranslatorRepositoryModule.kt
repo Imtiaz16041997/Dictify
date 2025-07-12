@@ -1,9 +1,9 @@
 package com.imtiaz.dictify.di.translator
 
-import com.imtiaz.dictify.data.dataSource.local.dao.LanguageDao
+import com.imtiaz.dictify.data.dataSource.local.LanguageRoomDao
 import com.imtiaz.dictify.data.dataSource.remote.DeeplApiService
 import com.imtiaz.dictify.data.repository.remote.translator.LanguageRepositoryImpl
-import com.imtiaz.dictify.domain.repository.translator.LanguageRepository
+import com.imtiaz.dictify.domain.translator.LanguageRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,7 +17,7 @@ object TranslatorRepositoryModule {
     @Provides
     @Singleton
     fun provideLanguageRepository(
-        languageDao: LanguageDao, // Unqualified, provided by AppModule
+        languageDao: LanguageRoomDao, // Unqualified, provided by AppModule
         deeplApi: DeeplApiService // <--- Now injects the UNQUALIFIED DeeplApiService
     ): LanguageRepository {
         return LanguageRepositoryImpl(languageDao, deeplApi)

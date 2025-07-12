@@ -1,4 +1,4 @@
-package com.imtiaz.dictify.navigation
+package com.imtiaz.dictify.navigation.component
 
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.NavigationBar
@@ -7,6 +7,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.imtiaz.dictify.navigation.Screen
+import com.imtiaz.dictify.navigation.currentRoute
 import com.imtiaz.dictify.utils.singleTopNavigator
 
 @Composable

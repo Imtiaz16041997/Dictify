@@ -1,4 +1,4 @@
-package com.imtiaz.dictify.domain.repository.common
+package com.imtiaz.dictify.domain.service
 
 interface TextToSpeechService {
     fun speak(text: String, languageCode: String)

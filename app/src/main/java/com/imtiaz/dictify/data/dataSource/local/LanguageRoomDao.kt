@@ -1,14 +1,14 @@
-package com.imtiaz.dictify.data.dataSource.local.dao
+package com.imtiaz.dictify.data.dataSource.local
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.imtiaz.dictify.data.model.translation.Language
+import com.imtiaz.dictify.domain.translator.Language
 
 @Dao
-interface LanguageDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+interface LanguageRoomDao {
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertAll(languages: List<Language>)
 
     @Query("SELECT * FROM languages")

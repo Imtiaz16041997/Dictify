@@ -1,7 +1,7 @@
-package com.imtiaz.dictify.di.translator
+package com.imtiaz.dictify.di.tts
 
-import com.imtiaz.dictify.data.repository.remote.common.TextToSpeechServiceImpl
-import com.imtiaz.dictify.domain.repository.common.TextToSpeechService
+import com.imtiaz.dictify.data.service.TextToSpeechServiceImpl
+import com.imtiaz.dictify.domain.service.TextToSpeechService
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

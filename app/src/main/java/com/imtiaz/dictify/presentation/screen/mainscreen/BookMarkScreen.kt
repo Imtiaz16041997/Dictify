@@ -1,4 +1,4 @@
-package com.imtiaz.dictify.presentation.screen
+package com.imtiaz.dictify.presentation.screen.mainscreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,8 +10,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun BookmarksScreen(navController: NavController) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Profile", fontSize = 24.sp)
+        Text("Bookmarks" ,fontSize = 24.sp)
     }
 }

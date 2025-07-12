@@ -3,12 +3,11 @@ package com.imtiaz.dictify.presentation.screen.mainscreen.translatorviewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.imtiaz.dictify.R
-import com.imtiaz.dictify.data.common.DataState
-import com.imtiaz.dictify.data.model.translation.Language
-import com.imtiaz.dictify.data.repository.remote.common.TranslatorEvent
-import com.imtiaz.dictify.domain.repository.common.TextToSpeechService
-import com.imtiaz.dictify.domain.repository.translator.LanguageRepository
+import com.imtiaz.dictify.domain.common.DataState
+import com.imtiaz.dictify.domain.translator.Language
+import com.imtiaz.dictify.presentation.screen.mainscreen.translatorviewmodel.TranslatorEvent
+import com.imtiaz.dictify.domain.service.TextToSpeechService
+import com.imtiaz.dictify.domain.translator.LanguageRepository
 import com.imtiaz.dictify.utils.FlagMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow

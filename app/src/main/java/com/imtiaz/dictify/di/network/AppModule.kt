@@ -3,7 +3,7 @@ package com.imtiaz.dictify.di.network
 import android.content.Context
 import androidx.room.Room
 import com.imtiaz.dictify.data.dataSource.local.LanguageDatabase
-import com.imtiaz.dictify.data.dataSource.local.dao.LanguageDao
+import com.imtiaz.dictify.data.dataSource.local.LanguageRoomDao
 import com.imtiaz.dictify.di.dictionary.DictionaryRepositoryModule
 import com.imtiaz.dictify.di.translator.TranslatorRepositoryModule
 import dagger.Module
@@ -35,7 +35,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLanguageDao(database: LanguageDatabase): LanguageDao {
+    fun provideLanguageDao(database: LanguageDatabase): LanguageRoomDao {
         return database.languageDao()
     }
 

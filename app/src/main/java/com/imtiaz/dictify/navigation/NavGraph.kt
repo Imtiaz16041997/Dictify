@@ -1,11 +1,5 @@
 package com.imtiaz.dictify.navigation
 
-import android.R.attr.type
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,16 +7,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.navArgument
 import com.imtiaz.dictify.R
-import com.imtiaz.dictify.presentation.screen.BookmarksScreen
-import com.imtiaz.dictify.presentation.screen.HomeScreen
-import com.imtiaz.dictify.presentation.screen.ProfileScreen
-import com.imtiaz.dictify.presentation.screen.TranslatorScreen
+import com.imtiaz.dictify.presentation.screen.mainscreen.BookmarksScreen
+import com.imtiaz.dictify.presentation.screen.mainscreen.HomeScreen
+import com.imtiaz.dictify.presentation.screen.mainscreen.ProfileScreen
+import com.imtiaz.dictify.presentation.screen.mainscreen.TranslatorScreen
 import com.imtiaz.dictify.presentation.screen.mainscreen.MainViewModel
 
 @Composable

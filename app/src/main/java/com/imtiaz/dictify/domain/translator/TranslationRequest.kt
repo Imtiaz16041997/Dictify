@@ -1,10 +1,10 @@
-package com.imtiaz.dictify.data.model.translation
+package com.imtiaz.dictify.domain.translator
 
 
 import com.google.gson.annotations.SerializedName
 
 data class TranslationRequest(
-    val text: List<String>, // API expects an array of strings
+    val text: List<String>,
     @SerializedName("target_lang")
     val targetLang: String
 )
