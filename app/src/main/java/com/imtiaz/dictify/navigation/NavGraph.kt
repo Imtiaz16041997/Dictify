@@ -30,31 +30,8 @@ fun Navigation(navController: NavHostController, mainViewModel: MainViewModel) {
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route,
-        modifier = Modifier.fillMaxSize(), // Important to ensure fills available space for transitions
-        enterTransition = { // For when a screen enters
-            slideInHorizontally(
-                initialOffsetX = { fullWidth -> fullWidth }, // Enters from right
-                animationSpec = tween(500)
-            ) + fadeIn(animationSpec = tween(500))
-        },
-        exitTransition = { // For when a screen exits
-            slideOutHorizontally(
-                targetOffsetX = { fullWidth -> -fullWidth }, // Exits to left
-                animationSpec = tween(500)
-            ) + fadeOut(animationSpec = tween(500))
-        },
-        popEnterTransition = { // For when a screen enters due to popping back stack
-            slideInHorizontally(
-                initialOffsetX = { fullWidth -> -fullWidth }, // Enters from left
-                animationSpec = tween(500)
-            ) + fadeIn(animationSpec = tween(500))
-        },
-        popExitTransition = { // For when a screen exits due to popping back stack
-            slideOutHorizontally(
-                targetOffsetX = { fullWidth -> fullWidth }, // Exits to right
-                animationSpec = tween(500)
-            ) + fadeOut(animationSpec = tween(500))
-        }
+        modifier = Modifier.fillMaxSize(),
+
     ) {
         composable(Screen.Home.route) {
             HomeScreen(navController, mainViewModel)
@@ -75,11 +52,11 @@ fun Navigation(navController: NavHostController, mainViewModel: MainViewModel) {
 @Composable
 fun navigationTitle(navController: NavController): String {
     return when (currentRoute(navController)) {
-        Screen.Home.route -> stringResource(R.string.app_name) // Assuming R.string.app_name is "iDictionary"
-        Screen.Bookmarks.route -> stringResource(R.string.app_name) // Or stringResource(R.string.bookmarks_title)
-        Screen.Translator.route -> stringResource(R.string.app_name) // Or stringResource(R.string.translator_title)
-        Screen.Profile.route -> stringResource(R.string.app_name)// Or stringResource(R.string.profile_title)
-        else -> stringResource(R.string.app_name) // Default or fallback
+        Screen.Home.route -> stringResource(R.string.app_name)
+        Screen.Bookmarks.route -> stringResource(R.string.app_name)
+        Screen.Translator.route -> stringResource(R.string.app_name)
+        Screen.Profile.route -> stringResource(R.string.app_name)
+        else -> stringResource(R.string.app_name)
     }
 }
 
