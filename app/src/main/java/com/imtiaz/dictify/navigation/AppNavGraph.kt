@@ -3,21 +3,20 @@ package com.imtiaz.dictify.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.imtiaz.dictify.presentation.screen.mainscreen.BookmarksScreen
 import com.imtiaz.dictify.presentation.screen.mainscreen.HomeScreen
-import com.imtiaz.dictify.presentation.screen.mainscreen.ProfileScreen
+import com.imtiaz.dictify.presentation.screen.mainscreen.HistoryScreen
 import com.imtiaz.dictify.presentation.screen.mainscreen.TranslatorScreen
 import com.imtiaz.dictify.presentation.screen.mainscreen.dictionaryviewmodel.MainViewModel
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.imtiaz.dictify.presentation.screen.WordDetailScreen
+import com.imtiaz.dictify.presentation.screen.mainscreen.dictionaryviewmodel.BookmarkViewModel
+import com.imtiaz.dictify.presentation.screen.mainscreen.history.HistoryViewModel
 
 
 @Composable
@@ -30,12 +29,7 @@ fun AppNavGraph(
         navController = navController,
         startDestination = Screen.Home.route, // Start with the home route
         modifier = modifier.fillMaxSize(),
-        // Apply transitions for smoother navigation (and flicker reduction)
- /*       enterTransition = { fadeIn(animationSpec = tween(300)) + slideInHorizontally(animationSpec = tween(300)) { it / 2 } },
-        exitTransition = { fadeOut(animationSpec = tween(300)) + slideOutHorizontally(animationSpec = tween(300)) { -it / 2 } },
-        popEnterTransition = { fadeIn(animationSpec = tween(300)) + slideInHorizontally(animationSpec = tween(300)) { -it / 2 } },
-        popExitTransition = { fadeOut(animationSpec = tween(300)) + slideOutHorizontally(animationSpec = tween(300)) { it / 2 } }
- */
+
         ) {
         composable(Screen.Home.route) { backStackEntry ->
             HomeScreen(navController, mainViewModel)
@@ -47,7 +41,7 @@ fun AppNavGraph(
             TranslatorScreen(navController)
         }
         composable(Screen.Profile.route) { backStackEntry ->
-            ProfileScreen(navController)
+            HistoryScreen (navController)
         }
 
         // WordDetail with argument

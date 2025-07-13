@@ -1,18 +1,12 @@
 package com.imtiaz.dictify.navigation
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Translate
-import androidx.compose.material3.Icon
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import com.imtiaz.dictify.R
 
 sealed class Screen(
@@ -41,6 +35,4 @@ sealed class Screen(
         }
     }
 
-    // You can add more routes here for other features
-    // data object Settings : Screen("settings_route", R.string.settings_title)
 }

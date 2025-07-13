@@ -3,6 +3,7 @@ package com.imtiaz.dictify.di.network
 import com.imtiaz.dictify.data.dataSource.remote.ApiService
 import com.imtiaz.dictify.data.dataSource.remote.ApiURL
 import com.imtiaz.dictify.data.dataSource.remote.DeeplApiService
+import com.imtiaz.dictify.data.remote.RandomWordApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,18 +36,18 @@ object NetworkModule {
 
     // --- Dictionary API Specific Bindings ---
 
-    @DictionaryApi // Qualifies this specific String instance
+    @DictionaryApi
     @Singleton
     @Provides
     fun provideDictionaryBaseURL(): String {
         return ApiURL.BASE_URL
     }
 
-    @DictionaryApi // Qualifies this specific OkHttpClient instance
+    @DictionaryApi
     @Singleton
     @Provides
     fun provideDictionaryOkHttpClient(
-        loggingInterceptor: HttpLoggingInterceptor // Injects the common, unqualified interceptor
+        loggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
         val okHttpClient = OkHttpClient().newBuilder()
         okHttpClient.callTimeout(40, TimeUnit.SECONDS)
@@ -57,13 +58,13 @@ object NetworkModule {
         return okHttpClient.build()
     }
 
-    @DictionaryApi // Qualifies this specific Retrofit instance
+    @DictionaryApi
     @Singleton
     @Provides
     fun provideDictionaryRetrofitClient(
-        @DictionaryApi baseUrl: String, // Injects the qualified dictionary base URL
-        @DictionaryApi okHttpClient: OkHttpClient, // Injects the qualified dictionary OkHttpClient
-        converterFactory: Converter.Factory // Injects the common, unqualified converter factory
+        @DictionaryApi baseUrl: String,
+        @DictionaryApi okHttpClient: OkHttpClient,
+        converterFactory: Converter.Factory
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
@@ -72,7 +73,6 @@ object NetworkModule {
             .build()
     }
 
-    // Provides the DictionaryApiService interface (UNQUALIFIED)
     @Singleton
     @Provides
     fun provideDictionaryApiService(@DictionaryApi retrofit: Retrofit): ApiService {
@@ -81,18 +81,18 @@ object NetworkModule {
 
     // --- Translator API Specific Bindings ---
 
-    @TranslatorApi // Qualifies this specific String instance
+    @TranslatorApi
     @Singleton
     @Provides
     fun provideTranslatorBaseURL(): String {
         return ApiURL.TRANSLATION_BASE_URL
     }
 
-    @TranslatorApi // Qualifies this specific OkHttpClient instance
+    @TranslatorApi
     @Singleton
     @Provides
     fun provideTranslatorOkHttpClient(
-        loggingInterceptor: HttpLoggingInterceptor // Injects the common, unqualified interceptor
+        loggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
         val okHttpClient = OkHttpClient().newBuilder()
         okHttpClient.callTimeout(40, TimeUnit.SECONDS)
@@ -103,13 +103,13 @@ object NetworkModule {
         return okHttpClient.build()
     }
 
-    @TranslatorApi // Qualifies this specific Retrofit instance
+    @TranslatorApi
     @Singleton
     @Provides
     fun provideTranslatorRetrofitClient(
-        @TranslatorApi baseUrl: String, // Injects the qualified translator base URL
-        @TranslatorApi okHttpClient: OkHttpClient, // Injects the qualified translator OkHttpClient
-        converterFactory: Converter.Factory // Injects the common, unqualified converter factory
+        @TranslatorApi baseUrl: String,
+        @TranslatorApi okHttpClient: OkHttpClient,
+        converterFactory: Converter.Factory
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
@@ -118,10 +118,55 @@ object NetworkModule {
             .build()
     }
 
-    // Provides the DeeplApiService interface (UNQUALIFIED)
     @Singleton
     @Provides
     fun provideDeeplApiService(@TranslatorApi retrofit: Retrofit): DeeplApiService {
         return retrofit.create(DeeplApiService::class.java)
+    }
+
+    // --- NEW: Random Word API Specific Bindings ---
+
+    @RandomWordApi // Qualifies this specific String instance
+    @Singleton
+    @Provides
+    fun provideRandomWordBaseURL(): String {
+        return ApiURL.RANDOM_WORD_BASE_URL // <--- Define this in ApiURL
+    }
+
+    @RandomWordApi // Qualifies this specific OkHttpClient instance
+    @Singleton
+    @Provides
+    fun provideRandomWordOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor
+    ): OkHttpClient {
+        // You can reuse the common OkHttpClient builder or customize if needed
+        val okHttpClient = OkHttpClient().newBuilder()
+        okHttpClient.callTimeout(40, TimeUnit.SECONDS)
+        okHttpClient.connectTimeout(40, TimeUnit.SECONDS)
+        okHttpClient.readTimeout(40, TimeUnit.SECONDS)
+        okHttpClient.writeTimeout(40, TimeUnit.SECONDS)
+        okHttpClient.addInterceptor(loggingInterceptor)
+        return okHttpClient.build()
+    }
+
+    @RandomWordApi // Qualifies this specific Retrofit instance
+    @Singleton
+    @Provides
+    fun provideRandomWordRetrofitClient(
+        @RandomWordApi baseUrl: String,
+        @RandomWordApi okHttpClient: OkHttpClient,
+        converterFactory: Converter.Factory
+    ): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .client(okHttpClient)
+            .addConverterFactory(converterFactory)
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideRandomWordApiService(@RandomWordApi retrofit: Retrofit): RandomWordApiService {
+        return retrofit.create(RandomWordApiService::class.java)
     }
 }

@@ -1,5 +1,6 @@
 package com.imtiaz.dictify.domain.dictionary
 
+import com.imtiaz.dictify.data.local.entity.DailyWordEntity
 import com.imtiaz.dictify.domain.common.DataState
 import com.imtiaz.dictify.data.model.dictionary.WordResponse
 import com.imtiaz.dictify.domain.model.dictionary.FavoriteWord
@@ -12,4 +13,8 @@ interface DictionaryRepository {
     suspend fun deleteFavoriteWord(word: String)
     fun getAllFavoriteWords(): Flow<List<FavoriteWord>>
     fun isWordFavorite(word: String): Flow<Boolean>
+
+    suspend fun insertDailyWord(dailyWord: DailyWordEntity) // For RandomWordWorker to save
+    fun getLatestDailyWord(): Flow<DailyWordEntity?> // For RandomWordWorker error handling
+    fun getAllDailyWords(): Flow<List<DailyWordEntity>> // For HistoryScreen
 }

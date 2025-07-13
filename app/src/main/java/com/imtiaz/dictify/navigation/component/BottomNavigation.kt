@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.imtiaz.dictify.R
 import com.imtiaz.dictify.navigation.Screen
 import com.imtiaz.dictify.navigation.bottomNavItems
 import com.imtiaz.dictify.navigation.currentRoute
@@ -24,7 +25,7 @@ fun BottomNavigationUI(navController: NavController, pagerState: PagerState) { /
         items.forEach { item ->
             NavigationBarItem(
                 icon = { Icon(imageVector = item.icon, contentDescription = item.contentDescription) },
-                label = { Text(text = stringResource(id = item.screen.titleResId)) }, // Use titleResId from Screen
+                label = { Text(text = stringResource(id = R.string.app_name)) }, // Use titleResId from Screen
                 selected = currentDestinationRoute == item.screen.route,
                 onClick = {
                     // **Solution for Continuous Tapping (Debouncing Nav)**

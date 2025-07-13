@@ -22,6 +22,8 @@ object DictionaryRepositoryModule {
     ): DictionaryRepository {
         return DictionaryRepositoryImpl(apiService, dictionaryDao)
     }
+
+
 }
 
 /*

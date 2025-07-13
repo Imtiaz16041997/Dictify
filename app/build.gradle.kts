@@ -20,6 +20,7 @@ android {
         versionName = "1.0"
         //buildConfigField("String", "API_KEY", "\"ebe00b316bmsh8190a541fa1249cp101471jsnfe67187c2328\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled = true
     }
 
     buildTypes {
@@ -125,5 +126,11 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
-    annotationProcessor(libs.room.compiler)
+    //annotationProcessor(libs.room.compiler)
+
+    // WorkManager
+    implementation(libs.work.runtime.ktx)
+    implementation(libs.hilt.work)
+    ksp(libs.hilt.androidx.compiler)
+
 }

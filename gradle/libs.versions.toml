@@ -46,7 +46,8 @@ multidex = "2.0.1"
 timber = "5.0.1"
 ksp = "2.2.0-2.0.2"
 room = "2.7.2"
-
+work = "2.9.0"
+hiltwork = "1.2.0"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -110,6 +111,10 @@ timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+work_runtime_ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
+hilt_work = { module = "androidx.hilt:hilt-work", version.ref = "hiltwork" }
+hilt_androidx_compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltwork" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

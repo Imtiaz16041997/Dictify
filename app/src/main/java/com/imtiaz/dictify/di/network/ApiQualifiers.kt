@@ -10,3 +10,7 @@ annotation class DictionaryApi
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
 annotation class TranslatorApi
+
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class RandomWordApi

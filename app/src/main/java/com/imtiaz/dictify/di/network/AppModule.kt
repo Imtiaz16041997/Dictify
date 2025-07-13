@@ -1,7 +1,9 @@
 package com.imtiaz.dictify.di.network
 
 import android.content.Context
+import androidx.hilt.work.HiltWorkerFactory
 import androidx.room.Room
+import com.imtiaz.dictify.HiltWorkManagerInitializer
 import com.imtiaz.dictify.data.dataSource.local.LanguageDatabase
 import com.imtiaz.dictify.data.dataSource.local.LanguageRoomDao
 import com.imtiaz.dictify.data.local.dao.DictionaryDao
@@ -46,6 +48,12 @@ object AppModule {
     @Singleton
     fun provideDictionaryDao(database: LanguageDatabase): DictionaryDao {
         return database.dictionaryDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideHiltWorkManagerInitializer(workerFactory: HiltWorkerFactory): HiltWorkManagerInitializer {
+        return HiltWorkManagerInitializer(workerFactory)
     }
 
 

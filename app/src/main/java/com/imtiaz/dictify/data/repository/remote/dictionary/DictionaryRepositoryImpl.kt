@@ -2,6 +2,7 @@ package com.imtiaz.dictify.data.repository.remote.dictionary
 
 import com.imtiaz.dictify.data.dataSource.remote.ApiService
 import com.imtiaz.dictify.data.local.dao.DictionaryDao
+import com.imtiaz.dictify.data.local.entity.DailyWordEntity
 import com.imtiaz.dictify.data.local.entity.DictionaryWordEntity
 import com.imtiaz.dictify.data.model.dictionary.WordResponse
 import com.imtiaz.dictify.domain.common.DataState
@@ -57,6 +58,18 @@ class DictionaryRepositoryImpl @Inject constructor(
 
     override fun isWordFavorite(word: String): Flow<Boolean> {
         return dictionaryDao.isWordFavorite(word)
+    }
+
+    override suspend fun insertDailyWord(dailyWord: DailyWordEntity) {
+        dictionaryDao.insertDailyWord(dailyWord)
+    }
+
+    override fun getLatestDailyWord(): Flow<DailyWordEntity?> {
+        return dictionaryDao.getLatestDailyWord()
+    }
+
+    override fun getAllDailyWords(): Flow<List<DailyWordEntity>> {
+        return dictionaryDao.getAllDailyWords()
     }
 
 }
