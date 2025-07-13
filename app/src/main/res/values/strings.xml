@@ -4,4 +4,9 @@
     <string name="book_mark">Bookmarks</string>
     <string name="translator">Translator</string>
     <string name="profile">Profile</string>
+    <string name="word_detail">Word Details</string>
+    <string name="home_screen_title">Dictify</string>
+    <string name="bookmarks_screen_title">Bookmarks</string>
+    <string name="translator_screen_title">Translator</string>
+    <string name="profile_screen_title">Profile</string>
 </resources>

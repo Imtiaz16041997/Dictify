@@ -1,23 +1,15 @@
 package com.imtiaz.dictify.data.dataSource.remote
 
-import com.imtiaz.dictify.data.model.LanguageResponse
-import com.imtiaz.dictify.data.model.WordsInformation
+import com.imtiaz.dictify.data.model.dictionary.WordResponse
 import retrofit2.http.GET
-import retrofit2.http.Query
+import retrofit2.http.Path
 
 interface ApiService {
 
-    @GET("languages")
-    suspend fun fetchMultiLanguage(
-    ): LanguageResponse
 
-    @GET("translations?")
+    @GET("entries/en/{word}")
     suspend fun findingWordTranslation(
-        @Query("text") textWord: String,
-        @Query("target") targetDestinationLang: String,
-        @Query("source") sourceDestinationLang: String,
-    ): WordsInformation
-
-
+        @Path("word") textWord: String
+    ): List<WordResponse>
 
 }

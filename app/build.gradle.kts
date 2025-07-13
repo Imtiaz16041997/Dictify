@@ -2,11 +2,10 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
-    id("kotlin-parcelize")
-
-
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
+    alias(libs.plugins.dagger.hilt)
+    //id("kotlin-kapt")
 }
 
 android {
@@ -19,8 +18,9 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-        buildConfigField("String", "API_KEY", "\"ebe00b316bmsh8190a541fa1249cp101471jsnfe67187c2328\"")
+        //buildConfigField("String", "API_KEY", "\"ebe00b316bmsh8190a541fa1249cp101471jsnfe67187c2328\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled = true
     }
 
     buildTypes {
@@ -38,10 +38,15 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+        freeCompilerArgs += "-Xannotation-default-target=param-property"
     }
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
 }
 
@@ -95,7 +100,8 @@ dependencies {
     implementation(libs.logging.interceptor)
     //hilt
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    //kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     //biometric
     implementation(libs.androidx.biometric)
@@ -115,4 +121,16 @@ dependencies {
     implementation(libs.androidx.multidex)
     // Logger
     implementation(libs.timber)
+
+    // Room database
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+    //annotationProcessor(libs.room.compiler)
+
+    // WorkManager
+    implementation(libs.work.runtime.ktx)
+    implementation(libs.hilt.work)
+    ksp(libs.hilt.androidx.compiler)
+
 }

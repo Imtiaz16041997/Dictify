@@ -1,60 +1,41 @@
 package com.imtiaz.dictify.presentation.screen.mainscreen
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.speech.RecognizerIntent
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.navigation.compose.rememberNavController
-import com.imtiaz.dictify.navigation.BottomNavigationUI
-import com.imtiaz.dictify.navigation.Navigation
+import com.imtiaz.dictify.navigation.component.BottomNavigationUI
 import com.imtiaz.dictify.navigation.Screen
 import com.imtiaz.dictify.navigation.currentRoute
-import com.imtiaz.dictify.presentation.component.MySearchBar
-
-
 import androidx.hilt.navigation.compose.hiltViewModel
-
-
-
-
-
-
+import com.imtiaz.dictify.navigation.AppNavGraph
+import com.imtiaz.dictify.navigation.navigationTitle
+import com.imtiaz.dictify.presentation.component.common.BaseTopBar
+import com.imtiaz.dictify.presentation.component.dictionary.HomeTopBar
+import com.imtiaz.dictify.presentation.screen.mainscreen.dictionaryviewmodel.MainViewModel
+import java.util.Locale
 
 
 @Composable
 fun MainScreen(){
     val navController = rememberNavController()
     val currentRoute = currentRoute(navController)
-
+    val context = LocalContext.current
     val hideTopBarRoutes = listOf(Screen.WordDetail.route)
     val bottomNavRoutes = listOf(
         Screen.Home.route,
@@ -67,84 +48,72 @@ fun MainScreen(){
     val pagerState = rememberPagerState(initialPage = 0) {
         bottomNavRoutes.size
     }
-
+    val focusManager = LocalFocusManager.current
     val mainViewModel: MainViewModel = hiltViewModel()
-    var searchText by remember { mutableStateOf("") }
+    //var searchText by remember { mutableStateOf("") }
+    val searchText by mainViewModel.searchQuery.collectAsState()
+
+    // 1. Setup ActivityResultLauncher for Speech Recognition
+    val speechRecognizerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            val spokenTexts = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            val spokenText = spokenTexts?.get(0) ?: ""
+
+            if (spokenText.isNotBlank()) {
+                // ONLY call triggerWordLookup.
+                // triggerWordLookup already updates _searchQuery and emits to _explicitSearchTrigger.
+                mainViewModel.triggerWordLookup(spokenText)
+                focusManager.clearFocus() // Hide keyboard after voice input
+            } else {
+                Toast.makeText(context, "No speech recognized.", Toast.LENGTH_SHORT).show()
+            }
+        } else if (result.resultCode == Activity.RESULT_CANCELED) {
+            Toast.makeText(context, "Speech recognition cancelled.", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Speech recognition error: ${result.resultCode}", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Scaffold(
         topBar = {
             if (showTopAppBarActions) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.primary)
-                        .statusBarsPadding()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        IconButton(onClick = { /* Handle navigation drawer open */ }) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu",
-                                tint = Color.White
-                            )
-                        }
-                        Text(
-                            text = "iDictionary",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = MaterialTheme.typography.titleLarge.fontSize
-                        )
-                        IconButton(onClick = { /* Handle more options */ }) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "More options",
-                                tint = Color.White
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    MySearchBar(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        text = searchText,
-                        onTextChange = { newValue ->
-                            searchText = newValue
-                            // NO API CALL HERE. Only update the text state.
-                        },
-                        placeholder = "Search word...",
-                        onCloseClicked = {
-                            searchText = ""
-                            // Clear previous search results when text is cleared
-                            mainViewModel.lookupWordDefinition("") // Pass empty to clear results
-                        },
-                        onMicClicked = {
-                            println("Mic icon clicked!")
-                            // Handle mic click
-                        },
-                        onLanguageClicked = {
-                            println("Language icon clicked!")
-                            // Handle language click
-                        },
-                        onSearchTriggered = { wordToSearch -> // <--- NEW CALLBACK IMPLEMENTATION
-                            if (wordToSearch.isNotBlank()) {
-                                mainViewModel.lookupWordDefinition(wordToSearch)
-                            } else {
-                                // If search triggered with empty text, clear results
-                                mainViewModel.lookupWordDefinition("")
+                // Dynamic Top Bar based on current route
+                when (currentRoute) {
+                    Screen.Home.route -> {
+                        HomeTopBar(
+                            searchText = searchText,
+                            onTextChange = { newValue -> mainViewModel.updateSearchQuery(newValue) },
+                            onCloseClicked = { mainViewModel.updateSearchQuery("") },
+                            onMicClicked = {
+                                println("Mic icon clicked!")
+                                launchSpeechRecognizer(speechRecognizerLauncher, context)
+                                Toast.makeText(context, "Speak now...", Toast.LENGTH_SHORT).show()
+                            },
+                            onLanguageClicked = { println("Language icon clicked!") },
+                            onSearchTriggered = { wordToSearch ->
+                                if (wordToSearch.isNotBlank()) {
+                                    mainViewModel.triggerWordLookup(wordToSearch)
+                                    focusManager.clearFocus()
+                                } else {
+                                    mainViewModel.triggerWordLookup(wordToSearch)
+                                    focusManager.clearFocus()
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
+                    Screen.Bookmarks.route,
+                    Screen.Translator.route,
+                    Screen.Profile.route -> {
+                        // Get the title dynamically based on the current route
+                        val screenTitle = navigationTitle(navController)
+                        BaseTopBar(title = screenTitle)
+                    }
+                    else -> {
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    }
                 }
             }
         },
@@ -153,121 +122,28 @@ fun MainScreen(){
                 BottomNavigationUI(navController, pagerState)
             }
         }
-    ){ paddingValues ->
+    )
+
+
+    { paddingValues ->
         Box(Modifier.padding(paddingValues)) {
-            Navigation(navController = navController, mainViewModel = mainViewModel)
+            AppNavGraph(navController = navController, mainViewModel = mainViewModel)
         }
     }
 }
 
+// Ensure this function is correctly placed and has the necessary imports
+private fun launchSpeechRecognizer(launcher: ActivityResultLauncher<Intent>, context: Context) {
+    val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault().toLanguageTag())
+        putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak the word you want to search...")
+    }
 
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun MainScreen(){
-//    val navController = rememberNavController()
-//    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-//    val currentRoute = currentRoute(navController)
-//
-//    val hideTopBarRoutes = listOf(Screen.WordDetail.route)
-//    val bottomNavRoutes = listOf(
-//        Screen.Home.route,
-//        Screen.Bookmarks.route,
-//        Screen.Translator.route,
-//        Screen.Profile.route,
-//    )
-//    val showTopAppBarActions = currentRoute !in hideTopBarRoutes
-//
-//    val pagerState = rememberPagerState(initialPage = 0) {
-//        bottomNavRoutes.size
-//    }
-//
-//    // State for the search bar, lifted to MainScreen
-//    var searchText by remember { mutableStateOf("") }
-//
-//    Scaffold(
-//        topBar = {
-//            if (showTopAppBarActions) {
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .background(MaterialTheme.colorScheme.primary) // TopBar background color
-//                        .statusBarsPadding() // Handle system status bar insets
-//                ) {
-//                    // Top row for hamburger menu, title, and three dots
-//                    Row(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(horizontal = 4.dp), // Adjust padding as needed
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        horizontalArrangement = Arrangement.SpaceBetween // Distribute content
-//                    ) {
-//                        // Hamburger menu icon
-//                        IconButton(onClick = { /* Handle navigation drawer open */ }) {
-//                            Icon(
-//                                imageVector = Icons.Default.Menu,
-//                                contentDescription = "Menu",
-//                                tint = Color.White
-//                            )
-//                        }
-//
-//                        // Title
-//                        Text(
-//                            text = "iDictionary",
-//                            maxLines = 1,
-//                            overflow = TextOverflow.Ellipsis,
-//                            color = Color.White,
-//                            fontWeight = FontWeight.Bold,
-//                            fontSize = MaterialTheme.typography.titleLarge.fontSize // Adjust font size
-//                        )
-//
-//                        // Three-dot menu icon
-//                        IconButton(onClick = { /* Handle more options */ }) {
-//                            Icon(
-//                                imageVector = Icons.Default.MoreVert,
-//                                contentDescription = "More options",
-//                                tint = Color.White
-//                            )
-//                        }
-//                    }
-//
-//                    // Spacer for visual separation (optional, adjust height as needed)
-//                    Spacer(modifier = Modifier.height(8.dp))
-//
-//                    // MySearchBar
-//                    // Padding for the search bar within the custom top bar
-//                    MySearchBar(
-//                        modifier = Modifier.padding(horizontal = 16.dp),
-//                        text = searchText,
-//                        onTextChange = { newValue ->
-//                            searchText = newValue
-//                        },
-//                        placeholder = "Search word...",
-//                        onCloseClicked = {
-//                            searchText = ""
-//                        },
-//                        onMicClicked = {
-//                            // Handle mic click
-//                        },
-//                        onLanguageClicked = {
-//
-//                            println("Language icon clicked!")
-//                        }
-//                    )
-//
-//                    // Padding below the search bar
-//                    Spacer(modifier = Modifier.height(8.dp))
-//
-//                }
-//            }
-//        },
-//        bottomBar = {
-//            if (currentRoute in bottomNavRoutes) {
-//                BottomNavigationUI(navController, pagerState)
-//            }
-//        }
-//    ){ padding ->
-//        Box(Modifier.padding(padding)) {
-//            Navigation(navController = navController)
-//        }
-//    }
-//}
+    if (intent.resolveActivity(context.packageManager) != null) {
+        launcher.launch(intent)
+    } else {
+        Toast.makeText(context, "Speech recognition not supported on this device.", Toast.LENGTH_LONG).show()
+    }
+}
+
