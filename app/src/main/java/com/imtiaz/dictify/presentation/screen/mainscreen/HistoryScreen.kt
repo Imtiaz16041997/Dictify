@@ -67,7 +67,7 @@ fun HistoryScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background) // Use your app's background color
+            .background(MaterialTheme.colorScheme.onSurface) // Use your app's background color
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

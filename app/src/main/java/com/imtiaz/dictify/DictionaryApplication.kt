@@ -40,7 +40,7 @@ class DictionaryApplication : MultiDexApplication() , Configuration.Provider {
         // Schedule to run every 8 hours (3 times a day)
         val dailyWordRequest = PeriodicWorkRequest.Builder(
             RandomWordWorker::class.java,
-            16, TimeUnit.MINUTES // Remember: Minimum interval for PeriodicWorkRequest is 15 minutes
+            15, TimeUnit.MINUTES // Remember: Minimum interval for PeriodicWorkRequest is 15 minutes
         )
             .setConstraints(constraints)
             .setBackoffCriteria(

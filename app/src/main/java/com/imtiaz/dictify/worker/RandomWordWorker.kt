@@ -107,18 +107,6 @@ class RandomWordWorker @AssistedInject constructor(
         val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         createNotificationChannel(notificationManager)
 
-        /*val pendingIntent = Intent(applicationContext, MainActivity::class.java).apply {
-            putExtra("word_item", dailyWord.word)
-            action = Intent.ACTION_VIEW
-        }.let { intent ->
-            PendingIntent.getActivity(
-                applicationContext,
-                0,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-        }*/
-
         val pendingIntent = Intent(applicationContext, MainActivity::class.java).apply {
             putExtra("word_item", dailyWord.word)
             putExtra("notification_definition", dailyWord.definition)       // <-- NEW
@@ -172,6 +160,9 @@ class RandomWordWorker @AssistedInject constructor(
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 description = "Notifications for daily word insights."
+                enableLights(true) // Optional: for notification light
+                enableVibration(true) // Optional: for vibration
+                lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
             }
             notificationManager.createNotificationChannel(channel)
         }
