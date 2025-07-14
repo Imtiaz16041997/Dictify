@@ -36,17 +36,17 @@ fun HomeTopBar(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.Black) // top bar color
-            .statusBarsPadding()
+           /* .background(Color.Black) // top bar color*/
+            //.statusBarsPadding()
     ) {
-        Row(
+        /*Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            IconButton(onClick = { /* Handle navigation drawer open */ }) {
+            IconButton(onClick = { *//* Handle navigation drawer open *//* }) {
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = "Menu",
@@ -61,19 +61,19 @@ fun HomeTopBar(
                 fontWeight = FontWeight.Bold,
                 fontSize = MaterialTheme.typography.titleLarge.fontSize
             )
-            IconButton(onClick = { /* Handle more options */ }) {
+            IconButton(onClick = { *//* Handle more options *//* }) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "More options",
                     tint = Color.White
                 )
             }
-        }
+        }*/
 
-        Spacer(modifier = Modifier.height(8.dp))
+        //Spacer(modifier = Modifier.height(8.dp))
 
         MySearchBar( // Assuming MySearchBar is a custom composable you have
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(2.dp),
             text = searchText,
             onTextChange = onTextChange,
             placeholder = "Search word...",
@@ -83,6 +83,6 @@ fun HomeTopBar(
             onSearchTriggered = onSearchTriggered
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        //Spacer(modifier = Modifier.height(8.dp))
     }
 }

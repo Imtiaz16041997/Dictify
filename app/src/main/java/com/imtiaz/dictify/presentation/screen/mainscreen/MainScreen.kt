@@ -40,7 +40,7 @@ import java.util.Locale
 fun MainScreen(){
     val navController = rememberNavController()
     val currentRoute = currentRoute(navController)
-    val context = LocalContext.current
+    //val context = LocalContext.current
     val hideTopBarRoutes = listOf(Screen.WordDetail.route)
     val bottomNavRoutes = listOf(
         Screen.Home.route,
@@ -53,10 +53,10 @@ fun MainScreen(){
     val pagerState = rememberPagerState(initialPage = 0) {
         bottomNavRoutes.size
     }
-    val focusManager = LocalFocusManager.current
+    //val focusManager = LocalFocusManager.current
     val mainViewModel: MainViewModel = hiltViewModel()
     //var searchText by remember { mutableStateOf("") }
-    val searchText by mainViewModel.searchQuery.collectAsState()
+   /* val searchText by mainViewModel.searchQuery.collectAsState()
 
     // 1. Setup ActivityResultLauncher for Speech Recognition
     val speechRecognizerLauncher = rememberLauncherForActivityResult(
@@ -80,15 +80,17 @@ fun MainScreen(){
         } else {
             Toast.makeText(context, "Speech recognition error: ${result.resultCode}", Toast.LENGTH_SHORT).show()
         }
-    }
-
+    }*/
+    RequestNotificationPermission()
     Scaffold(
         topBar = {
             if (showTopAppBarActions) {
                 // Dynamic Top Bar based on current route
                 when (currentRoute) {
                     Screen.Home.route -> {
-                        HomeTopBar(
+                        val screenTitle = navigationTitle(navController)
+                        BaseTopBar(title = screenTitle)
+                        /*HomeTopBar(
                             searchText = searchText,
                             onTextChange = { newValue -> mainViewModel.updateSearchQuery(newValue) },
                             onCloseClicked = { mainViewModel.updateSearchQuery("") },
@@ -107,7 +109,7 @@ fun MainScreen(){
                                     focusManager.clearFocus()
                                 }
                             }
-                        )
+                        )*/
                     }
                     Screen.Bookmarks.route,
                     Screen.Translator.route,
@@ -137,20 +139,6 @@ fun MainScreen(){
     }
 }
 
-// Ensure this function is correctly placed and has the necessary imports
-private fun launchSpeechRecognizer(launcher: ActivityResultLauncher<Intent>, context: Context) {
-    val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-        putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault().toLanguageTag())
-        putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak the word you want to search...")
-    }
-
-    if (intent.resolveActivity(context.packageManager) != null) {
-        launcher.launch(intent)
-    } else {
-        Toast.makeText(context, "Speech recognition not supported on this device.", Toast.LENGTH_LONG).show()
-    }
-}
 
 
 

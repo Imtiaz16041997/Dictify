@@ -1,5 +1,6 @@
 package com.imtiaz.dictify.presentation.screen.mainscreen
 
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,9 +15,14 @@ import com.imtiaz.dictify.presentation.component.dictionary.WordDefinitionCard
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
+import android.speech.RecognizerIntent
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,8 +32,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.imtiaz.dictify.presentation.component.common.ErrorCard
+import com.imtiaz.dictify.presentation.component.dictionary.HomeTopBar
 import com.imtiaz.dictify.presentation.component.dictionary.WordExpandableDefinition
 import com.imtiaz.dictify.presentation.screen.mainscreen.dictionaryviewmodel.MainViewModel
 import java.util.Locale
@@ -65,14 +73,62 @@ fun HomeScreen(
     }
 
     val textToSpeech = textToSpeechState.value
+    val focusManager = LocalFocusManager.current
+    val searchText by viewModel.searchQuery.collectAsState()
+
+    // 1. Setup ActivityResultLauncher for Speech Recognition
+    val speechRecognizerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            val spokenTexts = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            val spokenText = spokenTexts?.get(0) ?: ""
+
+            if (spokenText.isNotBlank()) {
+                // ONLY call triggerWordLookup.
+                // triggerWordLookup already updates _searchQuery and emits to _explicitSearchTrigger.
+                viewModel.triggerWordLookup(spokenText)
+                focusManager.clearFocus() // Hide keyboard after voice input
+            } else {
+                Toast.makeText(context, "No speech recognized.", Toast.LENGTH_SHORT).show()
+            }
+        } else if (result.resultCode == Activity.RESULT_CANCELED) {
+            Toast.makeText(context, "Speech recognition cancelled.", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Speech recognition error: ${result.resultCode}", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.onSurface),
-        contentPadding = PaddingValues(horizontal = 16.dp)
+            .background(MaterialTheme.colorScheme.onSurface)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
+            HomeTopBar(
+                searchText = searchText,
+                onTextChange = { newValue -> viewModel.updateSearchQuery(newValue) },
+                onCloseClicked = { viewModel.updateSearchQuery("") },
+                onMicClicked = {
+                    println("Mic icon clicked!")
+                    launchSpeechRecognizer(speechRecognizerLauncher, context)
+                    Toast.makeText(context, "Speak now...", Toast.LENGTH_SHORT).show()
+                },
+                onLanguageClicked = { println("Language icon clicked!") },
+                onSearchTriggered = { wordToSearch ->
+                    if (wordToSearch.isNotBlank()) {
+                        viewModel.triggerWordLookup(wordToSearch)
+                        focusManager.clearFocus()
+                    } else {
+                        viewModel.triggerWordLookup(wordToSearch)
+                        focusManager.clearFocus()
+                    }
+                }
+            )
             Spacer(modifier = Modifier.height(16.dp))
         }
 
@@ -220,6 +276,21 @@ fun HomeScreen(
                 }
             }
         }
+    }
+}
+
+// Ensure this function is correctly placed and has the necessary imports
+private fun launchSpeechRecognizer(launcher: ActivityResultLauncher<Intent>, context: Context) {
+    val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault().toLanguageTag())
+        putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak the word you want to search...")
+    }
+
+    if (intent.resolveActivity(context.packageManager) != null) {
+        launcher.launch(intent)
+    } else {
+        Toast.makeText(context, "Speech recognition not supported on this device.", Toast.LENGTH_LONG).show()
     }
 }
 
